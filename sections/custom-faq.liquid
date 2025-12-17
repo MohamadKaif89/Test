@@ -1,0 +1,32 @@
+{% if section.settings.custom_meta != blank %}
+<section class="feq-section">
+    {% for faq in section.settings.custom_meta %}
+    <div class="faq-item">
+   <h3>{{ faq.question }}</h3>
+   <p>{{ faq.asnswer }}</p>
+    </div>
+    {% endfor %}
+</section>
+{% endif %}
+
+
+{% schema %}
+{
+    "name": "Custom FAQ",
+    "settings": [
+        {
+            "type": "metaobject_list",
+            "id": "custom_meta",
+            "label": "Choose Meta Object",
+            "metaobject_type": "faq_practice"
+        }
+       
+    ],
+    "presets": [
+        {
+            "name": "Custom FAQ"
+        }
+    ]
+   
+}
+{%endschema %}

@@ -1,0 +1,153 @@
+<section class="block-section">
+  <div class="containers">
+
+    {% for block in section.blocks %}
+
+      {% if block.settings.block_link != blank %}
+       
+        <a class="icon-block" href="{{ block.settings.block_link }}">
+      {% else %}
+    
+        <div class="icon-block">
+      {% endif %}
+
+          <div class="icon">
+            {% if block.settings.icon %}
+              <img class="icon-img" src="{{ block.settings.icon | image_url }}" alt="icon" width="" height="">
+            {% endif %}
+          </div>
+
+          <h3 class="icon-title">
+            {% if block.settings.block_link == blank and block.settings.title_url != blank %}
+              <a href="{{ block.settings.title_url }}">{{ block.settings.title }}</a>
+            {% else %}
+              {{ block.settings.title }}
+            {% endif %}
+          </h3>
+
+          <p class="icon-desc">{{ block.settings.desc }}</p>
+
+      {% if block.settings.block_link != blank %}
+        </a>
+      {% else %}
+        </div>
+      {% endif %}
+
+    {% endfor %}
+
+  </div>
+</section>
+
+
+{% schema %}
+{
+  "name": "Icon title desc",
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Icon Block",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "url",
+          "id": "title_url",
+          "label": "Title Link"
+        },
+        {
+          "type": "textarea",
+          "id": "desc",
+          "label": "Short Description"
+        },
+        {
+          "type": "url",
+          "id": "block_link",
+          "label": "Full Block Link",
+          "info": "If added entire block becomes clickable"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icon title desc"
+    }
+  ]
+}
+{% endschema %}
+<style>
+    .block-section {
+  padding: 50px 0;
+}
+
+.block-section .containers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  justify-content: center;
+}
+
+.icon-block {
+  width: 260px;
+  padding: 25px 20px;
+  text-align: center;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  background: #fff;
+  color: inherit;
+  display: block;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.icon-block:hover {
+  transform: translateY(-6px);
+  border-color: #d0d0d0;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.icon {
+  margin-bottom: 15px;
+}
+
+.icon-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.icon-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.icon-title a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.icon-desc {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+}
+
+
+@media (max-width: 768px) {
+  .icon-block {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+</style>

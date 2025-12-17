@@ -1,0 +1,189 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "custom-announcement-bar": {
+      "type": "custom-announcement",
+      "settings": {
+        "text_1": "🎉 Celebrating over 30 years of innovation in magnetics",
+        "text_2": "— enjoy exclusive offers as a thank-you from Allied Components!"
+      }
+    },
+    "custom-header-section": {
+      "type": "header-custom-section",
+      "settings": {
+        "main_menu": "main-menu-2",
+        "call_number": "1-800-295-3800"
+      }
+    },
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement-bar-0": {
+          "type": "announcement",
+          "settings": {
+            "text": "Welcome to our store",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement-bar-0"
+      ],
+      "disabled": true,
+      "settings": {
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "color_scheme": "scheme-1",
+        "show_line_separator": true,
+        "show_social": false,
+        "enable_country_selector": false,
+        "enable_language_selector": false
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "logo_position": "middle-left",
+        "mobile_logo_position": "center",
+        "menu": "main-menu",
+        "menu_type_desktop": "dropdown",
+        "sticky_header_type": "on-scroll-up",
+        "show_line_separator": true,
+        "color_scheme": "scheme-1",
+        "menu_color_scheme": "scheme-1",
+        "enable_country_selector": true,
+        "enable_language_selector": true,
+        "enable_customer_avatar": true,
+        "margin_bottom": 0,
+        "padding_top": 20,
+        "padding_bottom": 20
+      }
+    },
+    "tab_carousel_kANHDL": {
+      "type": "tab-carousel",
+      "blocks": {
+        "tab_JGEX8Q": {
+          "type": "tab",
+          "settings": {
+            "tab_label": "old products",
+            "source_type": "products",
+            "collection": "batting-gloves",
+            "product_list": [
+              "adidas",
+              "aee128-4336",
+              "aee13-3740",
+              "aee13-3741",
+              "aee128-4337",
+              "aee13-4221-a-1",
+              "aee13-4221-a",
+              "aee5-4648",
+              "aee5-4649",
+              "black-blazer-for-men",
+              "bata",
+              "animal-zone-stegosaurus",
+              "accessories-1",
+              "black-leather-bag"
+            ]
+          }
+        },
+        "tab_HATWmW": {
+          "type": "tab",
+          "settings": {
+            "tab_label": "summwe",
+            "source_type": "collection",
+            "collection": "summer-collection",
+            "product_list": [
+              "body-location",
+              "boldfit-t-shirt-for-man-regular-fit-tshirt",
+              "cardigan",
+              "casual-gray-sneakers",
+              "casual-black-sneakers",
+              "casual-pink-sneakers",
+              "casual-blue-sneakers",
+              "classic-leather-jacket",
+              "chequered-red-shirt",
+              "concealer",
+              "classic-varsity-top"
+            ]
+          }
+        },
+        "tab_GNxmTW": {
+          "type": "tab",
+          "settings": {
+            "tab_label": "New Tab",
+            "source_type": "products",
+            "collection": "clutchers",
+            "product_list": [
+              "accessories-1",
+              "adidas",
+              "aee128-4336",
+              "aee128-4337",
+              "aee13-3741",
+              "aee13-3740",
+              "aee13-4221-a",
+              "aee13-4221-a-1",
+              "aee5-4648",
+              "animal-zone-foam-t-rex",
+              "aee5-4649"
+            ]
+          }
+        },
+        "tab_ifmyTK": {
+          "type": "tab",
+          "settings": {
+            "tab_label": "New Tab",
+            "source_type": "collection",
+            "collection": "frontpage",
+            "product_list": [
+              "accessories-1",
+              "adidas",
+              "aee128-4336",
+              "aee128-4337",
+              "aee13-3740",
+              "aee13-3741",
+              "aee13-4221-a",
+              "aee5-4648",
+              "aee13-4221-a-1",
+              "animal-zone-foam-t-rex",
+              "animal-zone-stegosaurus",
+              "bata",
+              "black-blazer-for-men",
+              "black-leather-bag",
+              "black-sunglass",
+              "blazer-closeup-portrait-of-handsome-confident",
+              "blue-silk-tuxedo",
+              "blue-sun-glasses",
+              "boat-airdopes-301",
+              "blush"
+            ]
+          }
+        }
+      },
+      "block_order": [
+        "tab_JGEX8Q",
+        "tab_HATWmW",
+        "tab_GNxmTW",
+        "tab_ifmyTK"
+      ],
+      "name": "Tabs Carousel",
+      "settings": {}
+    }
+  },
+  "order": [
+    "custom-announcement-bar",
+    "custom-header-section",
+    "announcement-bar",
+    "header",
+    "tab_carousel_kANHDL"
+  ]
+}

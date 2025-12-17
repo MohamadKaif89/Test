@@ -1,0 +1,98 @@
+<section class="ymal-section">
+    <h1>You may also like</h1>
+  <div class="ymal-container">
+    
+
+    {% for block in section.blocks %}
+      <div class="ymal-item">
+        <a href="{{ block.settings.product_link }}">
+          <img src="{{ block.settings.product_image | image_url }}" alt="{{ block.settings.product_title }}" width="" height="">
+          <h3>{{ block.settings.product_title }}</h3>
+
+          <div class="prices">
+             {% if block.settings.compare_price != blank and block.settings.compare_price > block.settings.product_price %}
+              <span class="compare-price">${{ block.settings.compare_price }}</span>
+            {% endif %}
+            <span class="price">${{ block.settings.product_price }}</span>           
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+
+  </div>
+</section>
+
+
+{% schema %}
+{
+  "name": "You May Also Like",
+  "blocks": [
+    {
+      "type": "product_box",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "product_image",
+          "label": "Product Image"
+        },
+        {
+          "type": "text",
+          "id": "product_title",
+          "label": "Product Title"
+        },
+        {
+          "type": "text",
+          "id": "product_price",
+          "label": "Price"
+        },
+        {
+          "type": "text",
+          "id": "compare_price",
+          "label": "Compare Price"
+        },
+        {
+          "type": "url",
+          "id": "product_link",
+          "label": "Product Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "You May Also Like" }
+  ]
+}
+{% endschema %}
+
+<style>
+    .ymal-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 137px;
+}
+
+.ymal-item {
+  width: 200px;
+}
+
+.ymal-item img {
+  width: 100%;
+  border-radius: 6px;
+}
+
+.prices {
+  margin-top: 5px;
+}
+
+.price {
+  font-weight: bold;
+}
+
+.compare-price {
+  text-decoration: line-through;
+  color: #888;
+  margin-left: 4px;
+}
+
+</style>

@@ -1,0 +1,327 @@
+<section class="collection-section">
+    <div class="coll-container">
+        <h2>Collections</h2>
+        <a href="">View all</a>
+    </div>
+    <div class="carousel-slider">
+        {% for block in section.blocks %}
+        {% assign collitem = collections[block.settings.custom_collection] %}
+
+        {% if collitem %}
+        <div class="carousel-con">
+            <div class="carousel-content">
+                {% if collitem.featured_image != blank %}
+
+
+                <img class="collection-img" src="{{collitem.featured_image |  image_url }}" alt="" width="" height="">
+                {% endif %}
+
+                <div class="title-collection">
+                    <p>{{collitem.title}}</p>
+                    <div class="view-coll">
+                        <a href="{{collitem.url}}">View collection</a>
+                        <span class="collection-arrow"><img src="{{'coll-arrow.png' |  asset_url}}" alt="" width=""
+                                height=""></span>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+{% schema %}
+{
+"name": "custom-collection",
+"settings": [],
+"blocks": [
+{
+"type": "coll-block",
+"name": "custom-allied-coll",
+"settings": [
+{
+"type": "collection",
+"id": "custom_collection",
+"label": "Choose Collection"
+}
+]
+}
+
+],
+"presets": [
+{
+"name": "custom-collection"
+}
+]
+}
+{% endschema %}
+
+<style>
+    .collection-section {
+        margin-top: 69.1px;
+        padding: 0 90px;
+
+    }
+
+    .coll-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        max-width: 1260px;
+        margin: auto;
+    }
+
+    .coll-container h2 {
+        font-size: 28.4px;
+        line-height: 36.95px;
+        font-weight: 700;
+        letter-spacing: 0;
+        color: #2A2B2A;
+        vertical-align: middle;
+        font-family: "DM Sans", sans-serif;
+        margin-top: 1px;
+
+    }
+
+    .coll-container a {
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 400;
+        letter-spacing: 0;
+        padding-bottom: 21px;
+        text-decoration: underline;
+        color: #2A2B2A;
+        font-family: "DM Sans", sans-serif;
+    }
+
+    .carousel-slider {
+        display: flex;
+        max-width: 1388px;
+        /* flex-wrap: wrap; */
+        gap: 36px;
+        width: 100%;
+        margin: auto;
+        padding-bottom: 56px;
+        overflow-x: scroll;
+    }
+
+
+    .carousel-con {
+        max-width: 13.20%;
+        max-height: 22.36%;
+        margin-right: 13px;
+        margin-top: 9px;
+    }
+
+    .carousel-con:nth-child(4) .title-collection p {
+        padding-top: 0px;
+
+    }
+
+    .carousel-con:nth-child(4) .view-coll {
+
+        padding-top: 2px;
+
+    }
+
+    .carousel-con:nth-child(5) .title-collection p {
+        padding-top: 1px;
+
+    }
+
+    .collection-img {
+        border: 1px solid #F2F2F2;
+        padding: 1px;
+        width: 183.33px;
+        /* max-width: 13.20%;
+        max-height: 13.20%; */
+        height: 183.33px;
+        object-fit: cover;
+        border-radius: 91.67px;
+
+
+    }
+
+    .title-collection p {
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 17px;
+        margin-top: 13px;
+        letter-spacing: 0;
+        color: #2A2B2A;
+        font-family: "DM Sans", sans-serif;
+    }
+
+    .title-collection {
+        width: 183.3px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-top: 0px;
+        gap: 0.41px;
+        
+    }
+
+    .view-coll {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: -17px;
+    }
+
+    .view-coll a {
+        font-size: 16px;
+        line-height: 24px;
+        letter-spacing: 0;
+        font-weight: 400;
+        color: #2A2B2A;
+        font-family: "DM Sans", sans-serif;
+    }
+
+    .collection-arrow img {
+        margin-top: 10px;
+        padding-left: 8px;
+    }
+
+    @media (max-width: 1024px) {
+
+        .collection-section {
+            padding: 0 40px;
+        }
+
+        .carousel-slider {
+            gap: 24px;
+        }
+
+        .carousel-con {
+            max-width: 22%;
+        }
+
+        .collection-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 75px;
+        }
+
+        .title-collection {
+            width: 150px;
+        }
+
+        .title-collection p {
+            font-size: 14px;
+        }
+
+        .view-coll a {
+            font-size: 14px;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .collection-section {
+            padding: 0 20px;
+            margin-top: 40px;
+        }
+
+        .coll-container {
+            flex-direction: row;
+            align-items: center;
+              padding: 0 4px;
+        }
+
+        .coll-container h2 {
+            font-size: 2rem;
+        }
+
+        .coll-container a {
+            font-size: 1.5rem;
+        }
+
+        .carousel-slider {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+            scrollbar-width: none;
+        }
+
+        .carousel-slider::-webkit-scrollbar {
+            display: none;
+        }
+
+        .carousel-con {
+            min-width: 160px;
+        }
+
+        .collection-img {
+            width: 140px;
+            height: 140px;
+            border-radius: 70px;
+        }
+
+        .title-collection {
+            width: 140px;
+            gap: 4px;
+        }
+
+        .title-collection p {
+            font-size: 13px;
+        }
+
+        .view-coll a {
+            font-size: 13px;
+        }
+
+        .collection-arrow img {
+           width: 100%;
+        height: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .carousel-slider{
+            display: flex;
+        gap: 20px;
+        /* max-height: 45%; */
+        /* padding-bottom: 20px; */
+        margin: 0;
+        scrollbar-width: none;
+        }
+
+        .collection-section {
+            padding: 0 10px;
+            margin: 0;
+        }
+
+        .coll-container h2 {
+            font-size: 2rem;
+        }
+
+        .carousel-con {
+            min-width: 140px;
+        }
+
+        .collection-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 60px;
+        }
+
+        .title-collection {
+            width: 120px;
+        }
+
+        .title-collection p {
+            font-size: 12px;
+        }
+
+        .view-coll a {
+            font-size: 12px;
+        }
+    }
+</style>

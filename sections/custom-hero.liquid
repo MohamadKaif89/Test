@@ -1,0 +1,277 @@
+<section class="hero-banner">
+    <div class="banner-container">
+        {% for block in section.blocks %}
+
+        <div class="banner-img">
+            <img src="{{block.settings.custom_hero_banner_block |  image_url }}" alt="hero-img" width="" height="">
+
+        </div>
+        <div class="banner-text-con">
+            <div class="banner-text">
+                <h2>{{ block.settings.banner_text_h2 | default: "Custom Transformers" }}</h2>
+                <p>{{ block.settings.banner_text_p | default: "Designed to your specifications." }}</p>
+                <div class="banner-button">
+                    <a href="{{ block.settings.banner_btn_url1}}">{{block.settings.banner_btn1 | default: "Shop Now"
+                        }}</a>
+
+                    <a href="{{ block.settings.banner_btn_url2}}">{{block.settings.banner_btn2 | default: "Optional
+                        button"}}</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</section>
+{% schema %}
+{
+"name": "hero-section",
+"settings": [
+
+],
+"blocks": [
+{
+"type": "hero-block",
+"name": "custom-hero-block",
+"settings": [
+{
+"type": "image_picker",
+"id": "custom_hero_banner_block",
+"label": "Add image block"
+},
+
+{
+"type": "text",
+"id": "banner_text_h2",
+"label": "Heading",
+"default": "Custom Transformers"
+},
+{
+"type": "text",
+"id": "banner_text_p",
+"label": "Sub Heading",
+"default": "Designed to your specifications."
+},
+{
+"type": "text",
+"id": "banner_btn1",
+"label": "Button Text",
+"default": "Shop Now"
+},
+{
+"type": "url",
+"id": "banner_btn_url1",
+"label": "Button Url"
+},
+{
+"type": "text",
+"id": "banner_btn2",
+"label": " Button Text",
+"default": "Optional button"
+
+
+},
+{
+"type": "url",
+"id": "banner_btn_url2",
+"label": "Button Url"
+}
+
+]
+}
+],
+"presets": [
+{
+"name": "custom-hero-section"
+}
+]
+
+}
+{% endschema %}
+<style>
+    .banner-container {
+        width: 100%;
+        max-width: 1440px;
+        height: 570px;
+        overflow: hidden;
+        position: relative;
+        margin: auto;
+    }
+
+    .banner-container .banner-img img {
+        width: 100%;
+        max-height: 570px;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+
+    }
+
+    .banner-text-con {
+        /* max-width: calc(1388px - 26px - 26px); */
+        width: 1388px;
+        margin-left: 26px;
+        margin-right: 26px;
+        height: 340px;
+        /* background-color: aqua; */
+        padding: 48px 64px 96px 64px;
+        /* margin: auto; */
+        position: absolute;
+        bottom: 112px;
+
+    }
+
+    .banner-text {
+        width: 627px;
+        max-width: 694px;
+        
+    }
+
+    .banner-text h2 {
+        font-size: 58.1px;
+        font-weight: 700;
+        line-height: 72.69px;
+        letter-spacing: 3.1px;
+        /* letter-spacing: 3.1px; */
+        color: #FFFFFF;
+        font-family: "DM Sans";
+        margin: 0px;
+    }
+
+    .banner-text p {
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 36px;
+        font-family: "DM Sans";
+        color: #FFFFFF;
+        margin: 0px;
+        letter-spacing: 0px;
+        margin-top: 8px;
+        margin-bottom: 31px;
+
+    }
+
+    .banner-button {
+        display: flex;
+        gap: 10px;
+
+    }
+
+    .banner-button a {
+        border: 2px solid #FFFFFF;
+        border-radius: 28px;
+        font-size: 14.1px;
+        font-weight: 700;
+        color: #FFFFFF;
+        padding: 9px 29px;
+        margin-left: 0px;
+    }
+
+    .banner-button a:hover {
+        background-color: #E6E6E6;
+        color: #000000;
+    }
+
+    @media (max-width: 1024px) {
+        .banner-text-con {
+            width: 100%;
+            padding: 40px 40px;
+            bottom: 157px;
+            margin: 0;
+        }
+
+        .banner-text {
+            width: 100%;
+            max-width: 90%;
+        }
+
+        .banner-text h2 {
+            font-size: 3rem;
+            line-height: 1.2;
+        }
+
+        .banner-text p {
+            font-size: 1.2rem;
+            line-height: 1.4;
+        }
+
+        .banner-button {
+            gap: 10px;
+        }
+
+        .banner-button a {
+            font-size: 0.9rem;
+            padding: 8px 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .banner-container .banner-img img {
+            height: 450px;
+            object-fit: cover;
+        }
+
+        .banner-text-con {
+            /* bottom: 20px;
+            padding: 20px; */
+        }
+
+        .banner-text {
+                   max-width: 100%;
+        margin: auto;
+        align-items: center;
+        text-align: center;
+        }
+
+        .banner-text h2 {
+            font-size: 2.4rem;
+
+        }
+
+
+        .banner-button {
+            flex-direction: column;
+            width: 28%;
+           margin: auto;
+        }
+
+
+        .banner-button a {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .banner-container{
+                height: 402px;
+        }
+        .banner-container .banner-img img {
+            height: 380px;
+        }
+
+        .banner-text-con {
+            bottom: 10px;
+            padding: 15px;
+        }
+
+        .banner-text h2 {
+            font-size: 1.8rem;
+
+        }
+
+        .banner-text p {
+            font-size: 1.5rem;
+        }
+
+        .banner-button {
+            width: 40%;
+          margin: auto;
+        }
+
+        .banner-button a {
+            font-size: 1.2rem;
+            padding: 8px 16px;
+        }
+    }
+</style>

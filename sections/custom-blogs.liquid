@@ -1,0 +1,131 @@
+{% schema %}
+{
+  "name": "Custom blogs",
+  "settings": [
+    {
+      "type": "blog",
+      "id": "custom_blog",
+      "label": "Select Blog"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom blogs"
+    }
+  ]
+}
+{% endschema %}
+
+<section class="blog-section">
+  <div class="blog-container">
+    <h3>This is Blogs</h3>
+    <div class="blog-row">
+      {% if section.settings.custom_blog %}
+        {% for article in blogs[section.settings.custom_blog].articles %}
+          <div class="blog-card">
+            <a href="{{article.url }}" class="blog-card">
+              <div class="blog-img">
+                {% if article.image %}
+                  <img src="{{ article.image | image_url: width: 600 }}" alt="{{ article.title }}" width="" height="">
+                {% endif %}
+              </div>
+              <h3>{{ article.title }}</h3>
+              <p>{{ article.excerpt | strip_html | truncate: 90 }}</p>
+              <p>Published at: {{ article.published_at | date: '%B %d, %Y' }}</p>
+            </a>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>Please select a blog</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+<style>
+
+  .blog-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
+      padding: 0 15px;
+  }
+
+  .blog-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      text-align: center;
+  }
+
+
+  .blog-card {
+      {% comment %} width: 100%;
+      max-width: 40%; {% endcomment %}
+
+      width: calc(25% - 20px);
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: 0.3s ease;
+
+  }
+  .blog-img img{
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      transition: 0.3s ease;
+  }
+  .blog-img img:hover{
+   transform: scale(1.05);
+
+  }
+
+  .blog-title {
+      font-size: 1.25rem;
+      margin-top: 12px;
+      font-weight: 600;
+  }
+  .blog-card h3{
+  font-size: 2rem;
+    margin-top: 12px;
+    font-weight: 600;
+  }
+  .blog-card  p:nth-of-type(1){
+      font-size: 1.5rem;
+    margin-top: 12px;
+    font-weight: 600;
+}
+  }
+  .blog-card p:nth-of-type(2){
+    font-size: 1rem;
+    margin-top: 12px;
+    font-weight: 600;
+
+}
+
+
+  .blog-excerpt {
+      font-size: 0.95rem;
+      margin-top: 8px;
+      color: #555;
+  }
+
+  @media (max-width: 1020px){
+      .blog-row{
+        width: 100%;
+      {% comment %} flex-wrap: wrap; {% endcomment %}
+      }
+      .blog-card{
+       {% comment %} max-width: 47%; {% endcomment %}
+        width: calc(50% - 13px);
+
+      }
+  }
+  @media (max-width: 480px){
+   .blog-card{
+     {% comment %} max-width: 100% {% endcomment %}
+     width: calc(100% - 0px);
+    }
+  }
+</style>

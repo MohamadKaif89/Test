@@ -1,0 +1,176 @@
+{% if product %}
+  <section class="product-info-section">
+    <div class="product-container">
+      <h1 class="product-title">{{ product.title }}</h1>
+
+      <div class="product-reviews"><p>* * * * * *</p></div>
+
+      {% if product.selected_or_first_available_variant.sku != blank %}
+        <p class="product-sku"><strong>SKU</strong> {{ product.selected_or_first_available_variant.sku }}</p>
+      {% endif %}
+
+      <div class="product-description">{{ product.description }}</div>
+
+      <div class="product-pricing">
+        <p class="price">{{ product.selected_or_first_available_variant.price | money }}</p>
+        {% assign variant = product.selected_or_first_available_variant %}
+        {% if variant.compare_at_price > variant.price %}
+          <p class="compare-price">
+            <s>{{ variant.compare_at_price | money }}</s>
+          </p>
+          {% assign save_amount = variant.compare_at_price | minus: variant.price %}
+          {% assign save_percent = save_amount | times: 100 | divided_by: variant.compare_at_price %}
+          <p class="save-percent">Save {{ save_percent | round }} %</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-item">
+        <button class="acc-btn">Product Description</button>
+        <div class="acc-content">
+          {{ product.description }}
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-btn">Material</button>
+        <div class="acc-content">
+          {% assign material = product.metafields.custom.materials %}
+          {{ material | default: 'No material added.' }}
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-btn">Key Features</button>
+        <div class="acc-content">
+          {% assign features = product.metafields.custom.keyfeatures %}
+          {% if features %}
+            <ul>
+              {% for f in features %}
+                <li>{{ f }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            No key features listed.
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-btn">Others</button>
+        <div class="acc-content">
+          {% assign other = product.metafields.custom.others %}
+          {% if other %}
+            {% assign entry = other.value | default: other %}
+            {% if entry.title %}
+              <h4>{{ entry.title }}</h4>
+            {% endif %}
+            {% if entry.description %}
+              {{ entry.description | metafield_tag }}
+            {% endif %}
+          {% else %}
+            No other details.
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+<section class="practice">
+  <div>
+    <h2>{{ product.title }}</h2>
+    <p>{{ product.description }}</p>
+    <p><b>Materials:</b>{{ product.metafields.custom.materials }}</p>
+  </div>
+
+</section>
+
+{% schema %}
+{
+  "name": "Product-fetch-details",
+  "settings": [],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Product-fetch-details"
+    }
+  ]
+}
+{% endschema %}
+<style>
+        .product-info-section {
+      padding: 20px 0;
+    }
+
+    .product-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .product-reviews {
+      margin-bottom: 10px;
+    }
+    .product-reviews p{
+      color: yellow;
+    }
+
+    .product-sku {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .product-description {
+      margin: 15px 0;
+      color: #555;
+    }
+
+    .product-pricing .price {
+      font-size: 24px;
+      font-weight: 700;
+      color: #000;
+    }
+
+    .product-pricing .compare-price {
+      color: #999;
+    }
+
+    .product-pricing .save-percent {
+      font-size: 14px;
+      color: #d32f2f;
+      font-weight: 600;
+    }
+
+
+    .accordion .acc-item {
+    border-bottom: 1px solid #ddd;
+  }
+
+  .acc-btn {
+    width: 100%;
+    padding: 12px;
+    text-align: left;
+    background: #f7f7f7;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .acc-content {
+    display: none;
+    padding: 10px;
+  }
+  .acc-item.active .acc-content {
+    display: block;
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.acc-btn').forEach((btn) => {
+    btn.addEventListener('click', function () {
+      this.parentElement.classList.toggle('active');
+    });
+  });
+</script>

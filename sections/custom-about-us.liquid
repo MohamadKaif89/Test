@@ -1,0 +1,309 @@
+<section class="about-us">
+  <div class="about-container">
+    <div class="about-row">
+
+
+      <div class="left-img">
+        {% if section.settings.left_image %}
+        <img src="{{ section.settings.left_image | image_url }}" alt="" width="" height="">
+        {% endif %}
+      </div>
+
+
+      <div class="right-content">
+        <div class="hero-content">
+
+          <h3>{{ section.settings.heading_1 }}</h3>
+
+          <h6>{{ section.settings.subheading_1 }}</h6>
+          <p>{{ section.settings.paragraph_1 }}</p>
+
+          <h6>{{ section.settings.subheading_2 }}</h6>
+          <p>{{ section.settings.paragraph_2 }}</p>
+
+          <h6>{{ section.settings.subheading_3 }}</h6>
+          <p>{{ section.settings.paragraph_3 }}</p>
+
+          <div class="about-button">
+            <a href="{{ section.settings.button_link }}">
+              {{ section.settings.button_text }}
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+{% schema %}
+{
+"name": "About Section",
+"settings": [
+
+{
+"type": "image_picker",
+"id": "left_image",
+"label": "Left Side Image"
+},
+
+{
+"type": "text",
+"id": "heading_1",
+"label": "Main Heading"
+},
+
+{
+"type": "text",
+"id": "subheading_1",
+"label": "Subheading 1"
+},
+{
+"type": "textarea",
+"id": "paragraph_1",
+"label": "Paragraph 1"
+},
+
+{
+"type": "text",
+"id": "subheading_2",
+"label": "Subheading 2"
+},
+{
+"type": "textarea",
+"id": "paragraph_2",
+"label": "Paragraph 2"
+},
+
+{
+"type": "text",
+"id": "subheading_3",
+"label": "Subheading 3"
+},
+{
+"type": "textarea",
+"id": "paragraph_3",
+"label": "Paragraph 3"
+},
+
+{
+"type": "text",
+"id": "button_text",
+"label": "Button Text"
+},
+{
+"type": "url",
+"id": "button_link",
+"label": "Button Link"
+}
+],
+
+"presets": [
+{
+"name": "About Section"
+}
+]
+}
+{% endschema %}
+<style>
+  .about-us {
+    padding-top: 149px;
+  }
+
+  .about-container {
+    width: 100%;
+    max-width: 1088px;
+    margin: auto;
+  }
+
+  .about-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 63px;
+    position: relative
+  }
+
+  .hero-content {
+        position: absolute;
+    top: 50%;
+    left: 73%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #fff;
+
+    margin-top: 96px;
+  }
+
+
+
+  .hero-content h3 {
+    font-size: 33.9px;
+    font-weight: 700;
+    margin: auto;
+    /* padding: 0px; */
+    padding-left: 4px;
+    height: 45px;
+    line-height: 44.11px;
+    letter-spacing: 0;
+    font-family: "DM Sans", sans-serif;
+    color: #2A2B2A;
+  }
+
+  .hero-content h6 {
+    font-size: 19.9px;
+    margin: auto;
+    height: 28.46px;
+    line-height: 27.87px;
+    padding-top: 15px;
+    font-weight: 700;
+    letter-spacing: 0;
+    font-family: "DM Sans", sans-serif;
+    color: #2A2B2A;
+
+  }
+
+  .hero-content p {
+    font-size: 16px;
+    margin: auto;
+    font-weight: 400;
+    line-height: 24px;
+    padding-top: 20px;
+    letter-spacing: 0;
+    font-family: "DM Sans", sans-serif;
+    color: #2A2B2A;
+
+  }
+
+  .about-button {
+    width: 130px;
+    max-width: 480px;
+    border: 2px solid #5F4B8B;
+    border-radius: 28px;
+    /* margin: auto; */
+    margin-top: 30px;
+    padding: 8px 23px;
+    background-color: #5F4B8B;
+    text-align: center;
+  }
+
+  .about-button:hover {
+    background-color: #7F6FA2;
+  }
+
+  .about-button a {
+    font-size: 14.1px;
+    font-weight: 700;
+    line-height: 16.9px;
+    letter-spacing: 0;
+    font-family: "DM Sans", sans-serif;
+    color: #FFFFFF;
+  }
+
+  @media (max-width: 1024px) {
+
+    .about-us {
+      padding-top: 100px;
+    }
+
+    .about-row {
+      gap: 40px;
+    }
+
+    .hero-content h3 {
+      font-size: 2.2rem;
+
+      line-height: 1.2;
+    }
+
+    .hero-content h6 {
+      font-size: 1.3rem;
+
+    }
+
+    .hero-content p {
+      font-size: 1rem;
+
+      line-height: 1.5;
+    }
+
+    .about-button {
+      padding: 8px 20px;
+    }
+  }
+
+  @media (max-width: 768px) {
+
+    .about-row {
+      flex-direction: column;
+      text-align: left;
+      gap: 30px;
+    }
+
+    .left-img img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    .hero-content {
+      margin: auto;
+    }
+
+    .hero-content h3 {
+     font-size: 2.8rem;
+      text-align: center;
+    }
+
+    .hero-content h6 {
+      font-size: 1.8rem;
+      padding-top: 10px;
+      text-align: center;
+    }
+
+    .hero-content p {
+      font-size: 1.6rem;
+      padding-top: 10px;
+      text-align: center;
+    }
+
+    .about-button {
+      width: 100%;
+      /* padding-top: 42px; */
+      max-width: 100px;
+      /* padding: 10px; */
+      padding: 2px 0px 0px 0px;
+      margin: auto;
+    }
+
+    .about-button a {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+
+    .about-us {
+      padding-top: 60px;
+    }
+
+    .hero-content h3 {
+      font-size: 1.9rem;
+    }
+
+    .hero-content h6 {
+      font-size: 1.5rem;
+    }
+
+    .hero-content p {
+      font-size: 1.2rem;
+    }
+
+    .about-button {
+      margin-top: 4px;
+    }
+
+
+  }
+</style>

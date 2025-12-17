@@ -1,0 +1,53 @@
+<section class="custom-product-prac">
+    <div class="container">
+        <div class="row">
+            <div class="left-img-parent">
+                <div class="left-img">
+                    {% for img  in product.images  %}
+                        <img src="{{img |  image_url }}" alt="{{product.title}}" width="" height="">  
+                    
+                    {% endfor %}
+
+                </div>
+                <div class="p-c-button">
+
+                </div>
+
+            </div>
+            <div class="right-content">
+                <h1>{{product.title}}</h1>
+                <div class="product-p-review">
+
+                </div>
+                {% if product.selected_or_first_available_variant.sku != blank  %} 
+                    <p><strong>SKU:</strong>{{product.selected_or_first_available_variant.sku}}</p>
+                
+                {% endif %}
+                <div class="product-p-pricing">
+                    <p class="compare-p-price">
+                        {% if product.compare_at_price > product.price  %}  
+                             {{product.compare_at_price |  money}}
+                        {% endif %}
+                        {{product.price | money}}
+                    </p>
+                    <div class="main-p-price">
+                        <p>{{product.price |  money}}</p>
+                        <p class="save-p-percent"></p>
+                    </div>
+                </div>
+                <div class="p-description">
+                    <p></p>
+                </div>
+                <div class="product-p-buttons">
+                    <button>Buy Now</button>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="accordian-p">
+                    <div class="acc-item"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</section>

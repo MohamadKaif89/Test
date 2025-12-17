@@ -1,0 +1,268 @@
+<section class="stay">
+    <div class="stay-container">
+
+        <div class="stay-banner">
+            {% if section.settings.banner_image != blank %}
+            <img src="{{ section.settings.banner_image | image_url }}" alt="banner" width="" height="">
+            {% endif %}
+        </div>
+
+        <div class="stay-inner-container">
+            <h2>{{ section.settings.heading }}</h2>
+            <p>{{ section.settings.text }}</p>
+
+            <div class="stay-input-sec">
+                <input class="last" type="text" placeholder="{{ section.settings.input_placeholder }}">
+
+
+                {% if section.settings.icon_image != blank %}
+                <img src="{{ section.settings.icon_image | image_url }}" alt="icon" width="" height="">
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+{% schema %}
+{
+"name": "Stay Section",
+"settings": [
+{
+"type": "image_picker",
+"id": "banner_image",
+"label": "Banner Image"
+},
+{
+"type": "text",
+"id": "heading",
+"label": "Heading",
+"default": "Stay With Us"
+},
+{
+"type": "textarea",
+"id": "text",
+"label": "Paragraph",
+"default": "Enter your message here."
+},
+{
+"type": "text",
+"id": "input_placeholder",
+"label": "Input Placeholder",
+"default": "Enter your name"
+},
+{
+"type": "image_picker",
+"id": "icon_image",
+"label": "Input Icon"
+}
+],
+"presets": [
+{
+"name": "Stay Section"
+}
+]
+}
+{% endschema %}
+<style>
+    .stay {
+        padding-top: 83px;
+    }
+
+    .stay-container {
+        width: 100%;
+        max-width: 1440px;
+        overflow: hidden;
+        position: relative;
+        margin: auto;
+    }
+
+    .stay-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .stay-inner-container {
+        position: absolute;
+        background-color: #FFFFFF;
+        width: 100%;
+        height: 235px;
+        max-width: 569px;
+        margin: auto;
+        top: 56px;
+        left: 434px;
+    }
+
+    .stay-inner-container h2 {
+        text-align: center;
+        font-size: 28.4px;
+        padding-top: 45px;
+        margin: 0;
+        line-height: 36.95px;
+        font-weight: 700;
+        line-height: 36.95px;
+        letter-spacing: 0;
+        color: #2A2B2A;
+        font-family: "DM Sans", sans-serif;
+    }
+
+    .stay-inner-container p {
+        text-align: center;
+        font-size: 16px;
+        line-height: 24px;
+        letter-spacing: 0;
+        font-weight: 400;
+        color: #2A2B2A;
+        font-family: "DM Sans", sans-serif;
+    }
+
+    .stay-input-sec {
+        text-align: center;
+        width: 100%;
+        max-width: 457px;
+        margin: auto;
+    }
+
+    .stay-input-sec input {
+        width: 100%;
+        border-radius: 34px;
+        height: 49.4px;
+        position: relative;
+        border: 1px solid #2A2B2A33;
+        /* border-color: #2A2B2A33; */
+        padding-left: 27px;
+    }
+
+    .stay-input-sec img {
+        position: absolute;
+        top: 153px;
+        right: 83px;
+    }
+
+    .last::placeholder {
+        font-size: 14.1px;
+        font-weight: 400;
+        line-height: 100%;
+        letter-spacing: 0;
+        color: #2A2B2A80 font-family: "DM Sans", sans-serif;
+    }
+
+    @media (max-width: 1024px) {
+
+        .stay-inner-container {
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 480px;
+            top: 44px;
+            height: auto;
+            /* bottom: -29px; */
+            padding: 1px 0px 9px 1px;
+
+        }
+
+        .stay-inner-container h2 {
+            font-size: 2rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .stay-inner-container p {
+            font-size: 1rem;
+        }
+
+        .stay-input-sec {
+            max-width: 380px;
+        }
+
+        .stay-input-sec img {
+            right: 67px;
+            top: 98px;
+            bottom: 18px;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .stay-inner-container {
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 69%;
+            height: 85%;
+            /* padding: 25px 15px; */
+            top: 9px;
+        }
+
+        .stay-inner-container h2 {
+            font-size: 1.7rem;
+        }
+
+        .stay-inner-container p {
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .stay-input-sec {
+            max-width: 73%;
+        }
+
+        .stay-input-sec input {
+            height: 46px;
+            padding-left: 20px;
+            font-size: 0.9rem;
+        }
+
+        .stay-input-sec img {
+            right: 76px;
+            /* bottom: 4px; */
+            top: 75px;
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stay {
+            padding-top: 17px;
+        }
+
+        .stay-inner-container {
+            width: 74%;
+            top: 3px;
+            padding: 0;
+        }
+
+        .stay-inner-container h2 {
+            font-size: 1.4rem;
+            margin: 0;
+            padding: 0;
+            line-height: 24px;
+        }
+
+        .stay-inner-container p {
+            font-size: 0.85rem;
+
+            padding: 0px 0px 0px 1px;
+            margin: 0;
+        }
+
+        .stay-input-sec {
+            max-width: 71%;
+            margin: 0;
+            margin: auto;
+        }
+
+        .stay-input-sec input {
+            height: 24px;
+        }
+
+        .stay-input-sec img {
+            right: 46px;
+            top: 58px;
+            width: 12px;
+            height: 12px;
+        }
+    }
+</style>

@@ -1,0 +1,143 @@
+<section>
+     <h1>{{ collection.title }}</h1>
+         {% paginate collection.products by section.settings.products_per_page %}
+  <div class="containers">
+   
+
+      <div class="product-grid">
+        {% for item in collection.products %}
+          <div class="product-card">
+            <a href="{{ item.url }}">
+              <img src="{{ item.featured_image  | image_url }}" width="" height="" alt="{{ item.title }}">
+              <h3>{{ item.title }}</h3>
+              <p class="price">{{ item.price | money }}</p>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+     
+  </div>
+   <div class="pagination">
+        {{ paginate | default_pagination }}
+      </div>
+    {% endpaginate %}
+</section>
+<style>
+    .containers{
+    width: 100%;
+     max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .product-card {
+      border: 1px solid #eee;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: auto;
+    }
+
+    .pagination {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    @media(max-width: 768px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+</style>
+{% comment %}
+  <section class="collection-wrapper">
+      <h1>kaif custom</h1>
+
+    <h1 class="collection-title">{{ collection.title }}</h1>
+
+    {% paginate collection.products by section.settings.products_per_page %}
+
+    <div class="product-grid">
+      {% for product in collection.products %}
+        <div class="product-card">
+          <a href="{{ product.url }}">
+            {% if product.featured_image %}
+              <img
+                src="{{ product.featured_image | img_url: '400x' }}"
+                alt="{{ product.title }}" width="" height="">
+            {% endif %}
+            <h3>{{ product.title }}</h3>
+            <p class="price">{{ product.price | money }}</p>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="pagination">
+        {{ paginate | default_pagination }}
+    </div>
+
+    {% endpaginate %}
+
+  </section>
+{% endcomment %}
+
+{% comment %}
+  <style>
+    .collection-wrapper {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .product-card {
+      border: 1px solid #eee;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: auto;
+    }
+
+    .pagination {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    @media(max-width: 768px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Collection Product Grid",
+  "settings": [
+    {
+      "type": "number",
+      "id": "products_per_page",
+      "label": "Products per page"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,509 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "image_banner": {
+      "type": "image-banner",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Browse our latest products",
+            "heading_size": "h0"
+          }
+        },
+        "button": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "Shop all",
+            "button_link_1": "shopify://collections/all",
+            "button_style_secondary_1": true,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "button"
+      ],
+      "disabled": true,
+      "settings": {
+        "image_overlay_opacity": 40,
+        "image_height": "large",
+        "image_behavior": "none",
+        "desktop_content_position": "bottom-center",
+        "desktop_content_alignment": "center",
+        "show_text_box": false,
+        "color_scheme": "scheme-3",
+        "stack_images_on_mobile": false,
+        "mobile_content_alignment": "center",
+        "show_text_below": false
+      }
+    },
+    "featured_collection": {
+      "type": "featured-collection",
+      "disabled": true,
+      "settings": {
+        "collection": "all",
+        "products_to_show": 8,
+        "title": "Featured products",
+        "heading_size": "h2",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": false,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "scheme-1",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 44,
+        "padding_bottom": 36
+      }
+    },
+    "custom_hero_RAghHL": {
+      "type": "custom-hero",
+      "blocks": {
+        "hero_block_t7HyR7": {
+          "type": "hero-block",
+          "settings": {
+            "custom_hero_banner_block": "shopify://shop_images/image_9.png",
+            "banner_text_h2": "Custom Transformers",
+            "banner_text_p": "Designed to your specifications.",
+            "banner_btn1": "Shop Now",
+            "banner_btn_url1": "",
+            "banner_btn2": "Optional button",
+            "banner_btn_url2": ""
+          }
+        }
+      },
+      "block_order": [
+        "hero_block_t7HyR7"
+      ],
+      "name": "custom-hero-section",
+      "settings": {}
+    },
+    "custom_collection_sec_cLPjjT": {
+      "type": "custom-collection-sec",
+      "blocks": {
+        "coll_block_kd9CCL": {
+          "type": "coll-block",
+          "settings": {
+            "custom_collection": "transformer"
+          }
+        },
+        "coll_block_feUdYh": {
+          "type": "coll-block",
+          "settings": {
+            "custom_collection": "lan-telecom-magnetics"
+          }
+        },
+        "coll_block_xc39MJ": {
+          "type": "coll-block",
+          "settings": {
+            "custom_collection": "rj45-usb-connectors"
+          }
+        },
+        "coll_block_rYnkMm": {
+          "type": "coll-block",
+          "settings": {
+            "custom_collection": "toroidal-inductors-common-mode-chokes"
+          }
+        },
+        "coll_block_LQ84Bm": {
+          "type": "coll-block",
+          "settings": {
+            "custom_collection": "smd-power-inductors-high-frequency-wire-wound-common-mode-chokes"
+          }
+        },
+        "coll_block_ERHfVW": {
+          "type": "coll-block",
+          "settings": {
+            "custom_collection": "line-filters-current-sensing-transformers"
+          }
+        },
+        "coll_block_rQgU6e": {
+          "type": "coll-block",
+          "settings": {
+            "custom_collection": "clutchers"
+          }
+        },
+        "coll_block_RqqwVM": {
+          "type": "coll-block",
+          "settings": {
+            "custom_collection": "lan-telecom-magnetics"
+          }
+        }
+      },
+      "block_order": [
+        "coll_block_kd9CCL",
+        "coll_block_feUdYh",
+        "coll_block_xc39MJ",
+        "coll_block_rYnkMm",
+        "coll_block_LQ84Bm",
+        "coll_block_ERHfVW",
+        "coll_block_rQgU6e",
+        "coll_block_RqqwVM"
+      ],
+      "name": "custom-collection",
+      "settings": {}
+    },
+    "custom_segment_Cqn8U9": {
+      "type": "custom-segment",
+      "blocks": {
+        "segment_image_YHzrNK": {
+          "type": "segment_image",
+          "settings": {
+            "image": "shopify://shop_images/segment1.png",
+            "title": "EDR Design Transformer",
+            "button_text": "Shop Now",
+            "button_link": "shopify://collections/frontpage"
+          }
+        },
+        "segment_image_Ac3wD4": {
+          "type": "segment_image",
+          "settings": {
+            "image": "shopify://shop_images/segment3.png",
+            "title": "10G Base T (LAN/Telecom Magnets)",
+            "button_text": "Shop Now",
+            "button_link": "shopify://collections/frontpage"
+          }
+        },
+        "segment_image_WdBdkd": {
+          "type": "segment_image",
+          "settings": {
+            "image": "shopify://shop_images/segment2.png",
+            "title": "Single Port (USB Connectors)",
+            "button_text": "Shop Now",
+            "button_link": "shopify://collections/frontpage"
+          }
+        },
+        "segment_image_8B38Wf": {
+          "type": "segment_image",
+          "settings": {
+            "image": "shopify://shop_images/segment4.png",
+            "title": "High Temperature Inductors (Toroidal Inductors)",
+            "button_text": "Shop Now",
+            "button_link": "shopify://collections/frontpage"
+          }
+        }
+      },
+      "block_order": [
+        "segment_image_YHzrNK",
+        "segment_image_Ac3wD4",
+        "segment_image_WdBdkd",
+        "segment_image_8B38Wf"
+      ],
+      "name": "Segments 4 Images",
+      "settings": {
+        "heading": "Segments"
+      }
+    },
+    "custom_transformer_hero_LXxCjG": {
+      "type": "custom-transformer-hero",
+      "name": "Transformer Section",
+      "settings": {
+        "heading": "Transformer Conductors – Optimize Efficiency & Durability",
+        "description": "Choose from premium copper or aluminum transformer conductors designed to enhance performance. Our conductors come in multiple geometries—round, rectangular, litz, stranded—to match any winding need.",
+        "button_text": "All Collections",
+        "button_link": ""
+      }
+    },
+    "custom_collection_product_NJ9i8m": {
+      "type": "custom-collection-product",
+      "blocks": {
+        "product_item_XXFdeD": {
+          "type": "product_item",
+          "settings": {
+            "product": "aee13-3740",
+            "button_text": "Choose options"
+          }
+        },
+        "product_item_Rbp6TB": {
+          "type": "product_item",
+          "settings": {
+            "product": "aee13-4221-a",
+            "button_text": "Add to cart"
+          }
+        },
+        "product_item_q7CyUj": {
+          "type": "product_item",
+          "settings": {
+            "product": "aee128-4336",
+            "button_text": "Add to cart"
+          }
+        },
+        "product_item_Th9JKB": {
+          "type": "product_item",
+          "settings": {
+            "product": "aee5-4648",
+            "button_text": "Add to cart"
+          }
+        },
+        "product_item_djAHiT": {
+          "type": "product_item",
+          "settings": {
+            "product": "aee128-4336",
+            "button_text": "Add to cart"
+          }
+        }
+      },
+      "block_order": [
+        "product_item_XXFdeD",
+        "product_item_Rbp6TB",
+        "product_item_q7CyUj",
+        "product_item_Th9JKB",
+        "product_item_djAHiT"
+      ],
+      "name": "Collection Product",
+      "settings": {
+        "main_heading": "Transformer",
+        "main_link": "shopify://collections",
+        "collection_get": "transformers",
+        "left_image": "shopify://shop_images/30f2c3798b8d8f1bd5da6b7fb2d7626a3a9df2a0.jpg",
+        "left_title": "nkfenfkn",
+        "left_description": "fwkfkwfknnk",
+        "left_button_text": "Shop Collection",
+        "left_button_url": ""
+      }
+    },
+    "custom_about_us_JMCpFA": {
+      "type": "custom-about-us",
+      "name": "About Section",
+      "settings": {
+        "left_image": "shopify://shop_images/402d47f93f4ca159c24eeac695cc7b10528d26ad.png",
+        "heading_1": "About Us",
+        "subheading_1": "Company History",
+        "paragraph_1": "Established in 1992, Allied Components is headquartered in\nFoothill Ranch, California.",
+        "subheading_2": "Principal Business",
+        "paragraph_2": "Allied Components International designs and manufactures a\nwide variety of industry standard and custom magnetic\ncomponents and modules. These products are used in\nnetworking, telecommunications, test equipment, power\nconversion and many other applications in the commercial and\nindustrial markets.",
+        "subheading_3": "Mission Statement",
+        "paragraph_3": "We are committed to providing our customers with quality\nproducts, on time deliveries, at competitive prices. We are also\ncommitted to providing a comfortable working environment for\nour employees with opportunity for growth and advancement.\nWe are a growing entity in the magnetics industry, determined to\nestablish a company founded on quality, commitment and\ncustomer service.",
+        "button_text": "Read More",
+        "button_link": "shopify://blogs/kaif-blog"
+      }
+    },
+    "custom_resources_MPwcE4": {
+      "type": "custom-resources",
+      "blocks": {
+        "resource_block_cJ8At7": {
+          "type": "resource_block",
+          "settings": {
+            "resource_image": "shopify://shop_images/326e63a74be5f0df6be8a0a622bc5d577d667527.png",
+            "resource_title": "News Letter"
+          }
+        },
+        "resource_block_PR6DQF": {
+          "type": "resource_block",
+          "settings": {
+            "resource_image": "shopify://shop_images/a4eadbb290a9c9e409fac16e8e6305d24253a4a1.png",
+            "resource_title": "RoHS / REACH / ISO"
+          }
+        },
+        "resource_block_k7VA6j": {
+          "type": "resource_block",
+          "settings": {
+            "resource_image": "shopify://shop_images/b15c00772c3fb57b6034af910171191986e3cb7e.png",
+            "resource_title": "Blog"
+          }
+        }
+      },
+      "block_order": [
+        "resource_block_cJ8At7",
+        "resource_block_PR6DQF",
+        "resource_block_k7VA6j"
+      ],
+      "name": "Resources Section",
+      "settings": {
+        "main_heading": "Resources",
+        "main_link_text": "View all",
+        "main_link_url": "shopify://blogs/kaif-blog"
+      }
+    },
+    "custom_stay_in_touch_ptLpXR": {
+      "type": "custom-stay-in-touch",
+      "name": "Stay Section",
+      "settings": {
+        "banner_image": "shopify://shop_images/2954969c4fa30ee2e83e7b1643ad078600a34328.png",
+        "heading": "Stay in touch",
+        "text": "Sign up for execlusive offers, original stories, events and more.",
+        "input_placeholder": "Your email",
+        "icon_image": "shopify://shop_images/Vectorsvf.png"
+      }
+    },
+    "custom_shipping_QmUFar": {
+      "type": "custom-shipping",
+      "blocks": {
+        "shipping_item_MAWD4y": {
+          "type": "shipping_item",
+          "settings": {
+            "ship_icon": "shopify://shop_images/car-icon.png",
+            "text_1": "Free shipping",
+            "text_2": "On all orders over $100"
+          }
+        },
+        "shipping_item_LHkUrP": {
+          "type": "shipping_item",
+          "settings": {
+            "ship_icon": "shopify://shop_images/offer-icon.png",
+            "text_1": "Special offers",
+            "text_2": "Regular sales and discounts"
+          }
+        },
+        "shipping_item_dnmcfx": {
+          "type": "shipping_item",
+          "settings": {
+            "ship_icon": "shopify://shop_images/return-icon.png",
+            "text_1": "Easy returns",
+            "text_2": "Hassle free returns policy"
+          }
+        },
+        "shipping_item_FAUD7H": {
+          "type": "shipping_item",
+          "settings": {
+            "ship_icon": "shopify://shop_images/chat-icon_922c87ed-4753-4b4a-93a8-1a7524921460.png",
+            "text_1": "Chat facility",
+            "text_2": "Talk to a real person"
+          }
+        }
+      },
+      "block_order": [
+        "shipping_item_MAWD4y",
+        "shipping_item_LHkUrP",
+        "shipping_item_dnmcfx",
+        "shipping_item_FAUD7H"
+      ],
+      "name": "Shipping Section",
+      "settings": {}
+    },
+    "custom_footer_CXzLiP": {
+      "type": "custom-footer",
+      "blocks": {
+        "social_icon_8TnJtL": {
+          "type": "social_icon",
+          "settings": {
+            "icon_img": "shopify://shop_images/facebook-icon.png",
+            "icon_link": "https://www.facebook.com/"
+          }
+        },
+        "social_icon_m8eUyU": {
+          "type": "social_icon",
+          "settings": {
+            "icon_img": "shopify://shop_images/p-icon.png",
+            "icon_link": "https://www.facebook.com/"
+          }
+        },
+        "social_icon_Xji7zD": {
+          "type": "social_icon",
+          "settings": {
+            "icon_img": "shopify://shop_images/x-icon.png",
+            "icon_link": "https://www.facebook.com/"
+          }
+        },
+        "social_icon_brNkGD": {
+          "type": "social_icon",
+          "settings": {
+            "icon_img": "shopify://shop_images/linke-icon.png",
+            "icon_link": "https://www.linkedin.com/login"
+          }
+        },
+        "social_icon_Raw3kV": {
+          "type": "social_icon",
+          "settings": {
+            "icon_img": "shopify://shop_images/a-icon.png",
+            "icon_link": "https://www.linkedin.com/login"
+          }
+        },
+        "social_icon_LhN9AC": {
+          "type": "social_icon",
+          "settings": {
+            "icon_img": "shopify://shop_images/google-icon.png",
+            "icon_link": "https://www.google.com/"
+          }
+        }
+      },
+      "block_order": [
+        "social_icon_8TnJtL",
+        "social_icon_m8eUyU",
+        "social_icon_Xji7zD",
+        "social_icon_brNkGD",
+        "social_icon_Raw3kV",
+        "social_icon_LhN9AC"
+      ],
+      "name": "Custom Footer",
+      "settings": {
+        "footer_logo": "shopify://shop_images/footer-logo.png",
+        "footer_description": "© 2025 Allied Components International –\nManufacturer of Surface Mount Chip Inductors,\nSMD Chokes, Custom Magnetics – all rights\nreserved",
+        "menu_title": "Main Menu",
+        "footer_menu": "main-menu-2",
+        "newsletter_title": "Newsletter",
+        "newsletter_text": "Sign up for exclusive offers, original\nstories, events and more.",
+        "input_placeholder": "Your email",
+        "input_icon": "shopify://shop_images/Vectorsvf.png",
+        "bottom_text": "© 2025 AlliedComponent. Powered by Shopify"
+      }
+    },
+    "featured_collection_fmW7Ym": {
+      "type": "featured-collection",
+      "disabled": true,
+      "name": "t:sections.featured-collection.presets.name",
+      "settings": {
+        "collection": "summer-collections",
+        "products_to_show": 4,
+        "title": "Featured collection",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": false,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "image_banner",
+    "featured_collection",
+    "custom_hero_RAghHL",
+    "custom_collection_sec_cLPjjT",
+    "custom_segment_Cqn8U9",
+    "custom_transformer_hero_LXxCjG",
+    "custom_collection_product_NJ9i8m",
+    "custom_about_us_JMCpFA",
+    "custom_resources_MPwcE4",
+    "custom_stay_in_touch_ptLpXR",
+    "custom_shipping_QmUFar",
+    "custom_footer_CXzLiP",
+    "featured_collection_fmW7Ym"
+  ]
+}

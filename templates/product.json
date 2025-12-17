@@ -1,0 +1,269 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "inventory_CndqQ6": {
+          "type": "inventory",
+          "settings": {
+            "text_style": "body",
+            "inventory_threshold": 10,
+            "show_inventory_quantity": true
+          }
+        },
+        "collapsible_tab_YddYyT": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Collapsible row",
+            "icon": "check_mark",
+            "content": "<p>{{ block.settings.page.metafields.custom.mobikas | metafield_tag }}</p>",
+            "page": ""
+          }
+        },
+        "vendor": {
+          "type": "text",
+          "settings": {
+            "text": "{{ product.vendor }}",
+            "text_style": "uppercase"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "circle"
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": true
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share"
+          }
+        },
+        "custom_liquid_kmgbrd": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% if variant.compare_at_price > variant.price %}\n          <p class=\"compare-price\">\n            <s>{{ variant.compare_at_price | money }}</s>\n          </p>\n          {% assign save_amount = variant.compare_at_price | minus: variant.price %}\n          {% assign save_percent = save_amount | times: 100 | divided_by: variant.compare_at_price %}\n\n          <p class=\"save-percent\">Save {{ save_percent | round }} %</p>\n        {% endif %}"
+          }
+        },
+        "judge_me_reviews_preview_badge_ckY6X6": {
+          "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {}
+        },
+        "judge_me_reviews_preview_badge_yhwECK": {
+          "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "inventory_CndqQ6",
+        "collapsible_tab_YddYyT",
+        "vendor",
+        "title",
+        "price",
+        "variant_picker",
+        "quantity_selector",
+        "buy_buttons",
+        "description",
+        "share",
+        "custom_liquid_kmgbrd",
+        "judge_me_reviews_preview_badge_ckY6X6",
+        "judge_me_reviews_preview_badge_yhwECK"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "color_scheme": "scheme-1",
+        "media_size": "large",
+        "constrain_to_viewport": true,
+        "media_fit": "contain",
+        "gallery_layout": "stacked",
+        "mobile_thumbnails": "hide",
+        "media_position": "left",
+        "image_zoom": "lightbox",
+        "hide_variants": true,
+        "enable_video_looping": false,
+        "padding_top": 36,
+        "padding_bottom": 12
+      }
+    },
+    "custom_product_fetch_e3KWzA": {
+      "type": "custom-product-fetch",
+      "name": "Product-fetch-details",
+      "settings": {}
+    },
+    "related-products": {
+      "type": "related-products",
+      "settings": {
+        "heading": "You may also like",
+        "heading_size": "h2",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "color_scheme": "scheme-1",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "padding_top": 36,
+        "padding_bottom": 28
+      }
+    },
+    "custom_faq_fMndTq": {
+      "type": "custom-faq",
+      "name": "Custom FAQ",
+      "settings": {
+        "custom_meta": [
+          "what-is-your-return-policy",
+          "how-long-does-delivery-take",
+          "do-you-offer-cash-on-delivery",
+          "how-can-i-track-my-order"
+        ]
+      }
+    },
+    "custom_yaml_Qn7ACj": {
+      "type": "custom-yaml",
+      "blocks": {
+        "product_box_bdJGz4": {
+          "type": "product_box",
+          "settings": {
+            "product_image": "shopify://shop_images/61hquJvYXKL._SY550.jpg",
+            "product_title": "Slim-Shirt",
+            "product_price": "8989",
+            "compare_price": "97997",
+            "product_link": "shopify://collections/summer-collection"
+          }
+        },
+        "product_box_UKDJHk": {
+          "type": "product_box",
+          "settings": {
+            "product_image": "shopify://shop_images/51NW7DOyfEL._SY550.jpg",
+            "product_title": "Slim-Shirt",
+            "product_price": "799",
+            "compare_price": "999",
+            "product_link": "shopify://collections/summer-collection"
+          }
+        },
+        "product_box_bXEBLf": {
+          "type": "product_box",
+          "settings": {
+            "product_image": "shopify://shop_images/jackets4.png",
+            "product_title": "Jacket",
+            "product_price": "600",
+            "compare_price": "900",
+            "product_link": "shopify://products/men-red-plain-jacket"
+          }
+        },
+        "product_box_ffLai6": {
+          "type": "product_box",
+          "settings": {
+            "product_image": "shopify://shop_images/61ohUIJiDJL._SY550.jpg",
+            "product_title": "t-shirt",
+            "product_price": "2000",
+            "compare_price": "2500",
+            "product_link": "shopify://products/t-shirt"
+          }
+        }
+      },
+      "block_order": [
+        "product_box_bdJGz4",
+        "product_box_UKDJHk",
+        "product_box_bXEBLf",
+        "product_box_ffLai6"
+      ],
+      "name": "You May Also Like",
+      "settings": {}
+    },
+    "custom_icon_title_desc_rWmna8": {
+      "type": "custom-icon-title-desc",
+      "blocks": {
+        "item_eKrefW": {
+          "type": "item",
+          "settings": {
+            "icon": "shopify://shop_images/x-icon.png",
+            "title": "Twitter",
+            "title_url": "https://x.com/",
+            "desc": "Twitter is a social platform where people share short messages, called tweets. You can follow others, stay updated with trending news, and express your thoughts quickly.",
+            "block_link": "shopify://products/adidas"
+          }
+        },
+        "item_nae3Gg": {
+          "type": "item",
+          "settings": {
+            "icon": "shopify://shop_images/linke-icon.png",
+            "title": "Linkedin",
+            "title_url": "https://www.linkedin.com/login",
+            "desc": "LinkedIn is a professional networking platform. People use it to showcase their skills, connect with companies, find jobs, and build their career profile.",
+            "block_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "item_eKrefW",
+        "item_nae3Gg"
+      ],
+      "name": "Icon title desc",
+      "settings": {}
+    },
+    "custom_product_fetch_imf_kR9A4B": {
+      "type": "custom-product-fetch-imf",
+      "name": "Product-fetch-details-img",
+      "settings": {}
+    },
+    "custom_yaml_new_yjGAPR": {
+      "type": "custom-yaml-new",
+      "name": "You May Also Like new",
+      "settings": {}
+    },
+    "custom_blogs_RbzrhK": {
+      "type": "custom-blogs",
+      "name": "Custom blogs",
+      "settings": {
+        "custom_blog": "beauty-secrets-hub"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "custom_product_fetch_e3KWzA",
+    "related-products",
+    "custom_faq_fMndTq",
+    "custom_yaml_Qn7ACj",
+    "custom_icon_title_desc_rWmna8",
+    "custom_product_fetch_imf_kR9A4B",
+    "custom_yaml_new_yjGAPR",
+    "custom_blogs_RbzrhK"
+  ]
+}

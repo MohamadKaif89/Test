@@ -1,0 +1,155 @@
+<section>
+    <div class="anouncement">
+        <div class="container">
+            <div class="text-1">
+                <p>{{section.settings.text_1}}</p>
+            </div>
+            <div class="text-2">
+                <p>{{section.settings.text_2}}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% schema %}
+{
+"name": "Anouncementbar",
+"settings": [
+{
+"type": "text",
+"id": "text_1",
+"label": "Text"
+},
+{
+"type": "text",
+"id": "text_2",
+"label": "Text"
+}
+],
+"blocks": [],
+"presets": [
+{
+"name": "Anouncementbar"
+}
+]
+}
+{% endschema %}
+
+<style>
+    /* :root {
+  --dm-font: 'DM Sans', sans-serif;
+} */
+
+    .anouncement {
+        width: 100%;
+        max-width: 1440px;
+        height: 41px;
+        padding: 9px 26px 8px 26px;
+        background-color: #5F4B8B;
+        margin: auto;
+    }
+
+    .container {
+        display: flex;
+        width: 100%;
+        max-width: 1388px;
+        height: 89%;
+        justify-content: center;
+        gap: 37px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .text-1 {}
+
+    .text-1 p {
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 22.4px;
+        color: #FFFFFF;
+        font-family: "DM Sans", sans-serif;
+        letter-spacing: 0px;
+
+    }
+
+    .text-2 {}
+
+    .text-2 p {
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 24px;
+        color: #FFFFFF;
+        font-family: "DM Sans", sans-serif;
+        letter-spacing: 0px;
+        /* padding-left: -5px;
+    padding-right: -21px; */
+        padding-inline: 6px;
+        margin-left: -10px;
+    }
+
+
+    @media (max-width: 1024px) {
+        .anouncement {
+            max-width: 100%;
+            width: 100%;
+            padding: 0px 10px;
+            height: auto;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            gap: 12px;
+            height: auto;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .text-1 p,
+        .text-2 p {
+            font-size: 12px;
+            line-height: 20px;
+            text-align: center;
+        }
+    }
+
+@media (max-width: 768px) {
+
+  .anouncement {
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+  }
+
+ 
+  .container {
+    display: inline-flex;
+    gap: 60px;
+    width: max-content;         
+    min-width: 300%;            
+    animation: slideMobile 15s linear infinite;
+  }
+
+  .text-1 p,
+  .text-2 p {
+    white-space: nowrap;
+    font-size: 14px;
+  }
+
+  
+  @keyframes slideMobile {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);  
+    }
+  }
+}
+
+
+
+</style>

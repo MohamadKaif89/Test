@@ -1,0 +1,547 @@
+<header>
+    <div class="header-container">
+        <div class="row">
+            <div class="logo-box">
+                <div class="logo">
+                    <figure>
+                        <a href="{{ shop.url }}">
+                            {% if section.settings.logo_image != blank %}
+                            <img src="{{ section.settings.logo_image | image_url }}" alt="logo" width="" height="">
+                            {% else %}
+                            <img src="{{ 'AlliedComponent.png' | asset_url }}" alt="logo" width="" height="">
+                            {% endif %}
+                        </a>
+                    </figure>
+                </div>
+            </div>
+            <div class="search-bar">
+                <img src="{{ 'Search-Vector.png' | asset_url }}" class="search-icon" width="" height="">
+                <input type="text" placeholder="Search for blog post">
+            </div>
+            <div class="more-menu">
+                <ul>
+                    <li>
+                        <a href="/account">
+                            {% if section.settings.account_icon != blank %}
+                            <img src="{{ section.settings.account_icon | image_url }}" alt="login" width="" height="">
+                            {% else %}
+                            <img src="{{ 'account-icon.png' | asset_url }}" alt="login" width="" height="">
+                            {% endif %}
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/cart">
+                            {% if section.settings.cart_icon != blank %}
+                            <img src="{{ section.settings.cart_icon | image_url }}" alt="cart" width="" height="">
+                            {% else %}
+                            <img src="{{ 'Cart-icon.png' | asset_url }}" alt="cart" width="" height="">
+                            {% endif %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="navbar">
+            <div class="menu-icons">
+                <img src="{{'hamberger.png' |  asset_url}}" alt="" width="" height="">
+                <img src="{{'akar-icons_cross (1).png' |  asset_url}}" alt="" width="" height=""
+                    style="background-color: black;">
+            </div>
+            <nav class="nav-wrapper">
+                <ul>
+                    {% for link in linklists[section.settings.main_menu].links %}
+                    <li>
+                        <a href="{{ link.url }}" data-test="{{ link.url }}">{{ link.title }}</a>
+
+
+                        {% if link.links.size > 0 %}
+                        <img src="{{ 'dropdown-icon.png' | asset_url }}" alt="arrow" width="" height="">
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+
+
+                <div class="call-box">
+                    <span class="call-icon">
+                        {% if section.settings.call_icon != blank %}
+                        <img src="{{ section.settings.call_icon | image_url }}" alt="icon" width="" height="">
+                        {% else %}
+                        <img src="{{ 'call-icon.png' | asset_url }}" alt="icon" width="" height="">
+                        {% endif %}
+                    </span>
+
+                    <span class="call-number">
+                        {{ section.settings.call_number }}
+                    </span>
+                </div>
+
+                <div class="mobile-icons">
+                    <a href="/account">
+                        {% if section.settings.account_icon != blank %}
+                        <img src="{{ section.settings.account_icon | image_url }}" alt="login" width="" height="">
+                        {% else %}
+                        <img src="{{ 'account-icon.png' | asset_url }}" alt="login" width="" height="">
+                        {% endif %}
+                    </a>
+
+                    <a href="/cart">
+                        {% if section.settings.cart_icon != blank %}
+                        <img src="{{ section.settings.cart_icon | image_url }}" alt="cart" width="" height="">
+                        {% else %}
+                        <img src="{{ 'Cart-icon.png' | asset_url }}" alt="cart" width="" height="">
+                        {% endif %}
+                    </a>
+                </div>
+
+            </nav>
+        </div>
+
+    </div>
+</header>
+
+
+{% schema%}
+{
+"name": "Navbar-custom",
+"settings": [
+{
+"type": "image_picker",
+"id": "logo_image",
+"label": "Ulpoad Logo"
+},
+{
+"type": "link_list",
+"id": "main_menu",
+"label": "Select Menu"
+},
+{
+"type": "image_picker",
+"id": "account_icon",
+"label": "Account Icon"
+},
+{
+"type": "image_picker",
+"id": "cart_icon",
+"label": "Cart Icon"
+},
+{
+"type": "image_picker",
+"id": "call_icon",
+"label": "Call Icon"
+},
+{
+"type": "text",
+"id": "call_number",
+"label": "Call Number",
+"default": "1-800-295-3800"
+}
+
+],
+"blocks": [],
+"presets": [
+{
+"name": "Navbar-custom"
+}
+]
+
+}
+
+{% endschema %}
+
+<style>
+    .header-container {
+        max-width: calc(1440px - 26px - 26px);
+        margin: auto;
+    }
+
+    ul {
+        list-style: none;
+
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .row {
+        display: flex;
+        /* margin: auto; */
+        justify-content: space-between;
+        background-color: #FFFFFF;
+    }
+
+    .more-menu ul {
+        display: flex;
+    }
+
+    .navbar nav ul {
+        display: flex;
+        gap: 28px;
+        align-items: center;
+    }
+
+    .navbar nav ul li {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .nav-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 40.10px;
+        padding: 10px 20px;
+    }
+
+    .logo-box {
+        width: 251.63px;
+        margin-left: 24px;
+        padding-bottom: 16px;
+
+    }
+
+    .logo-box .logo {
+        height: 73px;
+        padding-right: 24px;
+    }
+
+
+    .search-bar {
+        position: relative;
+        width: 804.75px;
+        height: 60px;
+        top: 32.5px;
+        right: 6px;
+    }
+
+    .search-bar input {
+        width: 100%;
+        padding: 10px 10px 10px 53px;
+        border: 1px solid #ccc;
+        letter-spacing: 0px;
+        border-radius: 25px;
+        background-color: #E6E6E6;
+        font-size: 16px;
+    }
+
+    .search-bar .search-icon {
+        position: absolute;
+        left: 22px;
+        top: 18%;
+        /* transform: translateY(-50%); */
+        width: 21px;
+        height: 23px;
+    }
+
+    .more-menu {
+
+        width: 213.63px;
+        min-width: 213.63px;
+        height: 60px;
+        /* position: relative; */
+        margin-top: 19.5px;
+        padding-left: 30px;
+        /* margin-left: -18px; */
+        /* top: 14.5px; */
+        padding-bottom: 16px;
+
+    }
+
+    .more-menu ul {
+        display: flex;
+        padding-left: 24px;
+    }
+
+    .more-menu ul li {
+        width: 56px;
+        height: 44px;
+        padding-left: 12px;
+    }
+
+    .arrow-icon {
+        width: 10px;
+        height: 10px;
+    }
+
+    .nav-wrapper ul li a {
+        font-size: 16px;
+        font-weight: 600;
+        color: #070707;
+        line-height: 19.2px;
+        letter-spacing: 0px;
+        padding-left: 1.9px;
+        font-family: "DM Sans", sans-serif;
+
+    }
+
+    .nav-wrapper ul li a:hover {
+        color: #777777;
+    }
+
+    .call-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 203px;
+        height: 31.6px;
+        /* max-width: 201px; */
+        background-color: #333;
+        color: white;
+        /* padding: 0px 35px; */
+        border-radius: 28px;
+        cursor: pointer;
+        padding-left: 3px;
+        padding-right: -14px;
+        position: relative;
+        margin-right: 42px;
+    }
+
+    .call-icon {
+        font-size: 18px;
+        /* padding-right: 17px; */
+        position: absolute;
+        left: 17px;
+        top: 2px;
+    }
+
+    .call-number {
+        margin-left: 45px;
+        font-size: 15px;
+        line-height: 39px;
+        font-weight: 700;
+        padding-right: -17px;
+        color: #FFFFFF;
+        font-family: "DM Sans", sans-serif;
+    }
+
+    .menu-icons {
+        display: none;
+    }
+
+    .mobile-icons {
+        display: none;
+    }
+
+    @media (max-width: 1024px) {
+
+        .nav-wrapper {
+            display: flex !important;
+            gap: 10px;
+            padding: 8px 12px;
+        }
+
+        .nav-wrapper ul {
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .nav-wrapper ul li a {
+            font-size: 14px;
+        }
+
+        .navbar nav ul {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+
+
+        .call-box {
+            width: auto;
+            padding: 6px 14px;
+            margin-right: 0;
+            gap: 8px;
+        }
+
+        .call-icon img {
+            width: 16px;
+            height: 16px;
+        }
+
+        .call-number {
+            font-size: 13px;
+            margin-left: 28px;
+            line-height: 28px;
+        }
+
+
+        .search-bar {
+            width: 55%;
+            top: 12px;
+        }
+
+
+        .more-menu {
+            padding-left: 5px;
+            min-width: auto;
+            width: auto;
+        }
+
+        /* .nav-wrapper {
+            display: none;
+        } */
+    }
+
+    @media (max-width: 768px) {
+
+        .search-bar input {
+            width: 100%;
+            /* padding: 10px 10px 10px 53px; */
+            border: 1px solid #ccc;
+            letter-spacing: 0px;
+            border-radius: 25px;
+            background-color: #E6E6E6;
+            font-size: 1.5rem;
+        }
+
+        .search-bar .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 13%;
+            /* transform: translateY(-50%); */
+            width: 18px;
+
+        }
+
+        .mobile-icons {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .mobile-icons img {
+            width: 28px;
+            height: 28px;
+        }
+
+        .menu-icons {
+            display: block;
+            position: absolute;
+            right: 7px;
+            top: 80px;
+            cursor: pointer;
+        }
+
+
+        .menu-icons img:last-child {
+            display: none;
+        }
+
+
+        .nav-wrapper {
+            display: flex;
+            position: absolute;
+            top: 147px;
+            width: 100%;
+            height: auto;
+            background: #cabebe;
+            padding: 20px;
+            flex-direction: column;
+            transition: 0.3s linear;
+            z-index: 999;
+            left: -100%;
+        }
+
+        .nav-wrapper.active {
+
+            left: 0;
+        }
+
+        .nav-wrapper ul {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .search-bar {
+            width: 64%;
+            position: relative;
+            top: -10px;
+            right: 40px;
+        }
+
+        .more-menu {
+            display: none;
+        }
+
+        .row {
+            padding: 15px;
+            align-items: center;
+            position: relative;
+        }
+
+        .logo-box {
+            width: auto;
+            margin-left: 0;
+        }
+
+        .logo-box .logo {
+            padding: 0;
+            margin-left: -12px;
+
+        }
+
+        .logo-box .logo figure {
+            margin: 0;
+        }
+
+        .logo figure img {
+            width: 66%;
+        }
+
+        .call-box {
+            width: 100%;
+            max-width: 50%;
+            /* max-width: 202px; */
+            margin-top: 20px;
+            justify-content: center;
+            margin-left: 37px;
+        }
+
+        .call-box .call-number {
+            font-size: 1.1rem;
+            padding-left: 24px;
+            margin: 0;
+        }
+    }
+</style>
+<script>
+    /*const menuIcon = document.querySelector(".menu-icons img:first-child");
+    const closeIcon = document.querySelector(".menu-icons img:last-child");
+    const nav = document.querySelector(".nav-wrapper");
+
+    menuIcon.onclick = () => {
+        nav.style.display = "flex";
+        menuIcon.style.display = "none";
+        closeIcon.style.display = "block";
+    };
+
+    closeIcon.onclick = () => {
+        nav.style.display = "";
+        menuIcon.style.display = "block";
+        closeIcon.style.display = "none";
+    }; */
+
+    const menuIcon = document.querySelector(".menu-icons img:first-child");
+    const closeIcon = document.querySelector(".menu-icons img:last-child");
+    const nav = document.querySelector(".nav-wrapper");
+
+    menuIcon.onclick = () => {
+        nav.classList.add("active");
+        menuIcon.style.display = "none";
+        closeIcon.style.display = "block";
+    };
+
+    closeIcon.onclick = () => {
+        nav.classList.remove("active");
+        menuIcon.style.display = "block";
+        closeIcon.style.display = "none";
+    };
+
+
+
+</script>

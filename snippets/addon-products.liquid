@@ -1,0 +1,70 @@
+{% if product.metafields.custom.add_on_products != blank%}
+    <div class="addon-products">
+        <h3>Add On Products</h3>
+
+        <div class="adon-grid">
+            {% for addon in product.metafields.custom.add_on_products.value %}
+            <div class="addon-card">
+
+               {% if addon.featured_image %}
+                <div class="addon-img">
+                    <img src="{{ addon.featured_image  | image_url}}" width="" height="" alt="{{ addon.title }}">
+                </div>
+                 
+               {% endif %}
+               <label class="addon-title">
+                <input type="checkbox" class="addon-checkbox" data-default-variant="{{ addon.selected_or_first_available_variant.id }}">
+                {{ addon.title }}
+
+               </label>
+               <div class="addon-price">
+                <p>{{ addon.price | money }}</p>
+               </div>
+                {% if addon.variants.size > 1 %}
+                    <select class="addon-variant">
+                        {% for variant in addon.variants %}
+                            <option value="{{ variant.id }}" {% unless variant.available %}disabled{% endunless %}>
+                                {{ variant.title }}
+
+                            </option>                    
+                        {% endfor %}
+                    </select>
+                   
+                  
+                {% endif %}
+                <input type="number" class="addon-quantity" value="1" min="1">
+
+             
+            </div>
+              
+            {% endfor %}
+        </div>
+    </div>
+  
+{% endif %}
+
+<style>
+    .adon-grid{
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+}
+    .addon-card{
+    border: 1px solid black;
+    text-align: center;
+    font-size: 13px;
+    }
+    .addon-img img{
+    width: 100%;
+    margin: auto;
+    }
+    .addon-variant{
+        width: 100%;
+        
+    }
+    .addon-variant input{
+     margin: auto;
+    border: 1px solid black;
+}
+    
+</style>
