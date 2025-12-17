@@ -1,8 +1,8 @@
 {% if product.metafields.custom.add_on_products != blank%}
-    <div class="addon-products">
+    <div class="addon-container">
         <h3>Add On Products</h3>
 
-        <div class="adon-grid">
+        <div class="addon-row">
             {% for addon in product.metafields.custom.add_on_products.value %}
             <div class="addon-card">
 
@@ -44,23 +44,43 @@
 {% endif %}
 
 <style>
-    .adon-grid{
+    .addon-container{
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+    .addon-row{
     display: flex;
     gap: 12px;
     flex-direction: column;
 }
     .addon-card{
+    width: calc(20% - 16px);
     border: 1px solid black;
     text-align: center;
+    padding: 12px;
+    box-sizing: border-box;
     font-size: 13px;
     }
     .addon-img img{
     width: 100%;
     margin: auto;
     }
-    .addon-variant{
+    .addon-title{
+        display: block;
+        margin-bottom: 6px;
+        cursor: pointer;
+    }
+    .addon-price{
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+    .addon-variant, .addon-quantity{
         width: 100%;
-        
+        margin-top: 6px;
+        font-size: 12px;
+        padding: 4px;
+
     }
     .addon-variant input{
      margin: auto;
