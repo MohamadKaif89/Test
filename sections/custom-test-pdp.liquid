@@ -1,0 +1,267 @@
+{% if request.page_type == 'product' %} 
+
+
+<section class="custom-pdp">
+    <div class="container">
+        <div class="row">
+
+            <div class="pdp-left">
+                <img src="{{ product.featured_image | image_url  }}" alt="{{ product.title }}" width="" height="">
+            </div>
+
+            <!-- RIGHT : Product Details -->
+            <div class="pdp-right">
+
+                <h1>{{ product.title }}</h1>
+
+                <div class="price-wrap">
+                    <span class="price">
+                        {{ product.selected_or_first_available_variant.price | money }}
+                    </span>
+
+                    {% if product.selected_or_first_available_variant.compare_at_price >
+                    product.selected_or_first_available_variant.price %}
+                    <span class="compare-price">
+                        {{ product.selected_or_first_available_variant.compare_at_price | money }}
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="description">
+                    {{ product.description }}
+                </div>
+
+                <!-- Main Quantity -->
+                <div class="qty">
+                    <label>Quantity</label>
+                    <input type="number" id="mainQty" value="1" min="1" max="{{product.selected_or_first_available_variant.inventory_quantity}}">
+                </div>
+
+                <!-- Add to Cart -->
+                <button id="addToCartBtn" data-main-variant="{{ product.selected_or_first_available_variant.id }}">
+                    Add to Cart
+                </button>
+
+                <!-- ADD-ON PRODUCTS -->
+                {% if product.metafields.custom.add_on_products.value != blank %}
+                <div class="addons">
+                    <h3>Add-On Products</h3>
+
+                    {% for addon in product.metafields.custom.add_on_products.value %}
+                    <div class="addon-item">
+
+                        <img src="{{ addon.featured_image | img_url: '200x' }}" alt="{{ addon.title }}" width=""
+                            height="">
+
+                        <div class="addon-info">
+                            <label>
+                                <input type="checkbox" class="addonCheck"
+                                    data-variant="{{ addon.selected_or_first_available_variant.id }}">
+                                {{ addon.title }}
+                            </label>
+
+                            {% comment %} variant dropdown {% endcomment %}
+                            {% if addon.variants.size > 1 %}
+                            <select class="addonVariant">
+                                {% for variant in addon.variants %}
+                                <option value="{{variant.id}}">
+                                    {{variant.title}} - {{variant.price | money}}
+                                </option>
+
+                                {% endfor %}
+                            </select>
+                            {% else %}
+                            <input type="hidden" class="addonVariant"
+                                value="{{addon.selected_or_first_available_variant.id}}">
+
+                            {% endif %}
+
+                            <div class="addon-price">
+                                {{ addon.selected_or_first_available_variant.price | money }}
+                            </div>
+
+                            <input type="number" class="addonQty" value="1" min="1" max="{{addon.selected_or_first_available_variant.inventory_quantity}}">
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <p id="cartMessage"></p>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% schema %}
+{
+"name": "test pdp",
+"settings": [],
+"presets": [
+{
+"name": "test pdp"
+}
+]
+}
+{% endschema %}
+
+
+<style>
+    .custom-pdp {
+        padding: 40px 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 0 16px;
+    }
+
+    .row {
+        display: flex;
+        gap: 40px;
+    }
+
+    .pdp-left,
+    .pdp-right {
+        flex: 1;
+    }
+
+    .pdp-left img {
+        width: 100%;
+    }
+
+    .price {
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .compare-price {
+        margin-left: 10px;
+        text-decoration: line-through;
+        color: #777;
+    }
+
+    .qty input,
+    .addonQty {
+        width: 70px;
+        margin-top: 6px;
+    }
+
+    #addToCartBtn {
+        padding: 12px 24px;
+        margin-top: 16px;
+        cursor: pointer;
+    }
+
+    .addons {
+        margin-top: 30px;
+    }
+
+    .addon-item {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .addon-item img {
+        width: 80px;
+    }
+
+    @media (max-width: 768px) {
+        .row {
+            flex-direction: column;
+        }
+    }
+</style>
+
+
+<script>
+    document.getElementById("addToCartBtn").addEventListener("click", function () {
+
+        const items = [];
+
+        // Main product
+        const mqI = document.getElementById("mainQty");
+        let mainQty = parseInt(mqI.value) || 1;
+        const mainMax = parseInt(mqI.max);
+
+        if(mainMax && mainQty > mainMax){
+            mainQty = mainMax;
+        }
+        items.push({
+            id: this.dataset.mainVariant,
+            quantity: mainQty
+        });
+       
+
+        // Add-on products
+        document.querySelectorAll(".addon-item").forEach(item => {
+            const checkbox = item.querySelector(".addonCheck");
+            if (!checkbox.checked) return;
+
+            const qtyInput = item.querySelector(".addonQty");
+            const variantId = item.querySelector(".addonVariant").value;
+            let qty = parseInt(qtyInput.value) || 1;
+            const maxQty = parseInt(qtyInput.max);
+
+            if(maxQty && qty > maxQty){
+                qty = maxQty;
+            }
+
+            items.push({
+                id: variantId,
+                quantity: qty
+            });
+        });
+
+        this.disabled = true;
+        this.innerText = "Adding...";
+
+        addItems(items)
+            .then(response => response.json()) 
+            .then((response)=>{
+                console.log(response, "Success response");
+                updateCartBubble()
+                 setTimeout(function (){
+                    addToCartBtn.innerText = "Add to Cart";
+                },3000);
+            })
+            .catch(() => {
+                document.getElementById("cartMessage").innerText =
+                    "Something went wrong.";
+                this.disabled = false;
+                this.innerText = "Add to Cart";
+            });
+    });
+    function updateCartBubble(){
+        fetch(window.Shopify.routes.root + 'cart.js')
+        .then(res=>res.json())
+        .then(res=> {
+            console.log("resolve cart", res);
+            const cartBubbleCount = document.querySelector('.cart-count-bubble')
+            cartBubbleCount.innerText= res.item_count
+            cartBubbleCount.style.display = 'flex'
+            
+        })
+     
+    }
+
+    function addItems(items) {
+        let promise = Promise.resolve();
+
+            promise = promise.then(() => {
+                return fetch("/cart/add.js", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(items)
+                });
+            });
+       
+       
+
+        return promise;
+    }
+</script>

@@ -1390,9 +1390,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!res.ok) throw new Error();
       return res.json();
     })
-    .then(() => {
+    .then((res) => {
       window.location.href = '/cart';
-      
+      console.log(res)
       // location.reload();
     })
     .catch(() => {

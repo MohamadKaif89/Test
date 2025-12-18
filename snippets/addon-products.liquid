@@ -5,7 +5,7 @@
         <div class="addon-row">
             {% for addon in product.metafields.custom.add_on_products.value %}
             <div class="addon-card">
-
+                <div class="addon-img-title">
                {% if addon.featured_image %}
                 <div class="addon-img">
                     <img src="{{ addon.featured_image  | image_url}}" width="" height="" alt="{{ addon.title }}">
@@ -17,6 +17,7 @@
                 {{ addon.title }}
 
                </label>
+               </div>
                <div class="addon-price">
                 <p>{{ addon.price | money }}</p>
                </div>
@@ -45,9 +46,7 @@
 
 <style>
     .addon-container{
-        max-width: 1200px;
         margin: 0 auto;
-        padding: 0 16px;
     }
     .addon-row{
     display: flex;
@@ -55,32 +54,54 @@
     flex-direction: column;
 }
     .addon-card{
-    width: calc(20% - 16px);
+        display: flex;
+        gap: 10px;
     border: 1px solid black;
-    text-align: center;
     padding: 12px;
-    box-sizing: border-box;
     font-size: 13px;
     }
+    .addon-img-title{
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
     .addon-img img{
-    width: 100%;
-    margin: auto;
+    width: 70px;
+    height: auto;
+    object-fit: contain;
     }
     .addon-title{
         display: block;
         margin-bottom: 6px;
+        font-weight: 500;
         cursor: pointer;
     }
-    .addon-price{
-        font-size: 13px;
-        margin-bottom: 6px;
+    .addon-title input{
+        margin-right: 6px;
     }
-    .addon-variant, .addon-quantity{
-        width: 100%;
-        margin-top: 6px;
-        font-size: 12px;
-        padding: 4px;
+    .addon-price{
+        font-size: 15px;
+        font-weight: 600;
+        text-align: center;
 
+       
+    }
+    .addon-variant{
+       margin-top: 37%;
+    /* width: 100%; */
+    height: 2%;
+    /* margin: 0 auto; */
+    font-size: 12px;
+    padding: 4px;
+
+    }
+    .addon-quantity{
+      width: 80px;
+    height: 1%;
+    margin-top: 16%;
+    padding: 5px;
+    font-size: 13px;
+    text-align: center;
     }
     .addon-variant input{
      margin: auto;
