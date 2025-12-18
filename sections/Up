@@ -1,0 +1,95 @@
+<script>
+document.getElementById("addToCartBtn").addEventListener("click", function () {
+
+  const btn = this;
+  const items = [];
+
+  /* ===== MAIN PRODUCT ===== */
+  const mainQtyInput = document.getElementById("mainQty");
+  let mainQty = parseInt(mainQtyInput.value) || 1;
+  const mainMax = parseInt(mainQtyInput.max);
+
+  if (mainMax && mainQty > mainMax) {
+    mainQty = mainMax;
+  }
+
+  items.push({
+    id: btn.dataset.mainVariant,
+    quantity: mainQty
+  });
+
+  /* ===== ADD-ON PRODUCTS ===== */
+  document.querySelectorAll(".addon-item").forEach(item => {
+    const checkbox = item.querySelector(".addonCheck");
+    if (!checkbox || !checkbox.checked) return;
+
+    const variantId = item.querySelector(".addonVariant").value;
+    const qtyInput = item.querySelector(".addonQty");
+    let qty = parseInt(qtyInput.value) || 1;
+    const maxQty = parseInt(qtyInput.max);
+
+    if (maxQty && qty > maxQty) {
+      qty = maxQty;
+    }
+
+    items.push({
+      id: variantId,
+      quantity: qty
+    });
+  });
+
+  btn.disabled = true;
+  btn.innerText = "Adding...";
+
+  addItems(items)
+    .then(() => {
+      updateCartBubble();
+
+      btn.innerText = "Added ✔";
+      btn.disabled = false;
+
+      setTimeout(() => {
+        btn.innerText = "Add to Cart";
+      }, 2000);
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.innerText = "Add to Cart";
+      alert("Something went wrong");
+    });
+});
+
+/* ===== BULK ADD ===== */
+const addItems = items => {
+  return fetch(window.Shopify.routes.root + "cart/add.js", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ items })
+  }).then(res => {
+    if (!res.ok) throw new Error("Add to cart failed");
+    return res.json();
+  });
+};
+
+/* ===== CART COUNT BUBBLE ===== */
+const updateCartBubble = () => {
+  fetch(window.Shopify.routes.root + "cart.js")
+    .then(res => res.json())
+    .then(cart => {
+      const bubble = document.querySelector(".cart-count-bubble");
+      if (!bubble) return;
+
+      const span = bubble.querySelector("span");
+      if (!span) return;
+
+      if (cart.item_count > 0) {
+        span.innerText = cart.item_count;
+        bubble.classList.remove("hidden");
+      } else {
+        bubble.classList.add("hidden");
+      }
+    });
+};
+</script>
