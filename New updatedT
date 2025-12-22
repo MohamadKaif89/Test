@@ -1,0 +1,151 @@
+{% comment %}
+  Free Gift on Cart Threshold
+  - UI + JS + Settings in ONE file
+  - No apps
+  - Ajax Cart API
+{% endcomment %}
+
+{% if section.settings.enable_free_gift %}
+
+<!-- ===== UI MESSAGE ===== -->
+<div
+  id="free-gift-message"
+  style="display:none; padding:12px; margin:10px 0; background:#f3f9f4; border:1px solid #4CAF50; color:#2e7d32; font-size:14px;"
+>
+  {{ section.settings.message_text }}
+</div>
+
+<script>
+/* ===============================
+   FREE GIFT SETTINGS (FROM THEME)
+================================ */
+const freeGiftConfig = {
+  enabled: {{ section.settings.enable_free_gift | json }},
+  threshold: {{ section.settings.threshold_amount | times: 100 }},
+  productHandle: "{{ section.settings.free_gift_product.handle }}",
+};
+
+/* ===============================
+   BASIC AJAX CART HELPERS
+================================ */
+async function getCart() {
+  const res = await fetch('/cart.js');
+  return res.json();
+}
+
+async function getGiftVariantId() {
+  const res = await fetch(`/products/${freeGiftConfig.productHandle}.js`);
+  const product = await res.json();
+  return product.variants[0].id; // First available variant
+}
+
+async function addFreeGift(variantId) {
+  console.log("Adding free gift");
+
+  await fetch('/cart/add.js', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: variantId,
+      quantity: 1,
+      properties: {
+        _free_gift: 'true'
+      }
+    })
+  });
+}
+
+async function removeFreeGift(lineItemKey) {
+  console.log("Removing free gift");
+
+  await fetch('/cart/change.js', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: lineItemKey,
+      quantity: 0
+    })
+  });
+}
+
+/* ===============================
+   CORE FREE GIFT LOGIC
+================================ */
+async function handleFreeGift() {
+
+  if (!freeGiftConfig.enabled || !freeGiftConfig.productHandle) return;
+
+  const cart = await getCart();
+  const variantId = await getGiftVariantId();
+
+  const freeGiftItem = cart.items.find(item =>
+    item.variant_id === variantId
+  );
+
+  const messageBox = document.getElementById('free-gift-message');
+
+  console.log("Cart total:", cart.total_price);
+  console.log("Threshold:", freeGiftConfig.threshold);
+
+  // THRESHOLD MET
+  if (cart.total_price >= freeGiftConfig.threshold) {
+
+    messageBox.style.display = 'block';
+
+    // Add gift only if not already in cart
+    if (!freeGiftItem) {
+      await addFreeGift(variantId);
+      document.dispatchEvent(new Event('cart:updated'));
+    }
+
+  } else {
+    // THRESHOLD NOT MET
+    messageBox.style.display = 'none';
+
+    if (freeGiftItem) {
+      await removeFreeGift(freeGiftItem.key);
+      document.dispatchEvent(new Event('cart:updated'));
+    }
+  }
+}
+
+/* ===============================
+   INITIAL LOAD + CART UPDATES
+================================ */
+document.addEventListener('DOMContentLoaded', handleFreeGift);
+document.addEventListener('cart:updated', handleFreeGift);
+
+</script>
+
+{% endif %}
+
+{% schema %}
+{
+  "name": "Free Gift on Cart Threshold",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_free_gift",
+      "label": "Enable Free Gift",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "threshold_amount",
+      "label": "Threshold Amount",
+      "default": 1000
+    },
+    {
+      "type": "product",
+      "id": "free_gift_product",
+      "label": "Free Gift Product"
+    },
+    {
+      "type": "text",
+      "id": "message_text",
+      "label": "Message Text",
+      "default": "🎁 You've unlocked a free gift!"
+    }
+  ]
+}
+{% endschema %}
