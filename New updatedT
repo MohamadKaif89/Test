@@ -1,63 +1,61 @@
-{% comment %}
-  Free Gift on Cart Threshold
-  - UI + JS + Settings in ONE file
-  - No apps
-  - Ajax Cart API
-{% endcomment %}
-
 {% if section.settings.enable_free_gift %}
 
-<!-- ===== UI MESSAGE ===== -->
+<!-- ================= FREE GIFT MESSAGE UI ================= -->
 <div
   id="free-gift-message"
-  style="display:none; padding:12px; margin:10px 0; background:#f3f9f4; border:1px solid #4CAF50; color:#2e7d32; font-size:14px;"
->
-  {{ section.settings.message_text }}
-</div>
+  style="
+    display:none;
+    padding:12px;
+    margin:12px 0;
+    background:#f3f9f4;
+    border:1px solid #4caf50;
+    color:#2e7d32;
+    font-size:14px;
+  "
+></div>
 
 <script>
-/* ===============================
-   FREE GIFT SETTINGS (FROM THEME)
-================================ */
+/* =========================================================
+   FREE GIFT CONFIG (FROM THEME CUSTOMIZER)
+========================================================= */
 const freeGiftConfig = {
   enabled: {{ section.settings.enable_free_gift | json }},
   threshold: {{ section.settings.threshold_amount | times: 100 }},
   productHandle: "{{ section.settings.free_gift_product.handle }}",
+  successMessage: "{{ section.settings.message_text }}",
+  showProgress: {{ section.settings.show_progress_message | json }},
+  progressMessage: "{{ section.settings.progress_message }}"
 };
 
-/* ===============================
-   BASIC AJAX CART HELPERS
-================================ */
+let isProcessingFreeGift = false;
+
+/* =========================================================
+   CART HELPERS (NO CACHE)
+========================================================= */
 async function getCart() {
-  const res = await fetch('/cart.js');
+  const res = await fetch('/cart.js', { cache: 'no-store' });
   return res.json();
 }
 
 async function getGiftVariantId() {
   const res = await fetch(`/products/${freeGiftConfig.productHandle}.js`);
   const product = await res.json();
-  return product.variants[0].id; // First available variant
+  return product.variants[0].id; // Auto: first available variant
 }
 
 async function addFreeGift(variantId) {
-  console.log("Adding free gift");
-
   await fetch('/cart/add.js', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       id: variantId,
       quantity: 1,
-      properties: {
-        _free_gift: 'true'
-      }
+      properties: { _free_gift: 'true' }
     })
   });
 }
 
 async function removeFreeGift(lineItemKey) {
-  console.log("Removing free gift");
-
   await fetch('/cart/change.js', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -68,53 +66,77 @@ async function removeFreeGift(lineItemKey) {
   });
 }
 
-/* ===============================
+/* =========================================================
    CORE FREE GIFT LOGIC
-================================ */
+========================================================= */
 async function handleFreeGift() {
 
   if (!freeGiftConfig.enabled || !freeGiftConfig.productHandle) return;
+  if (isProcessingFreeGift) return;
+
+  isProcessingFreeGift = true;
 
   const cart = await getCart();
-  const variantId = await getGiftVariantId();
-
-  const freeGiftItem = cart.items.find(item =>
-    item.variant_id === variantId
-  );
-
+  const giftVariantId = await getGiftVariantId();
   const messageBox = document.getElementById('free-gift-message');
 
-  console.log("Cart total:", cart.total_price);
-  console.log("Threshold:", freeGiftConfig.threshold);
+  const freeGiftItem = cart.items.find(
+    item => item.variant_id === giftVariantId
+  );
 
-  // THRESHOLD MET
+  /* ===== THRESHOLD MET ===== */
   if (cart.total_price >= freeGiftConfig.threshold) {
 
+    messageBox.innerHTML = freeGiftConfig.successMessage;
     messageBox.style.display = 'block';
 
-    // Add gift only if not already in cart
     if (!freeGiftItem) {
-      await addFreeGift(variantId);
-      document.dispatchEvent(new Event('cart:updated'));
+      await addFreeGift(giftVariantId);
+      await handleFreeGift();
     }
 
-  } else {
-    // THRESHOLD NOT MET
-    messageBox.style.display = 'none';
+  } 
+  /* ===== BELOW THRESHOLD ===== */
+  else {
+
+    if (freeGiftConfig.showProgress) {
+      const remaining = freeGiftConfig.threshold - cart.total_price;
+      const formattedAmount = (remaining / 100).toFixed(2);
+
+      messageBox.innerHTML =
+        freeGiftConfig.progressMessage.replace('{{amount}}', formattedAmount);
+
+      messageBox.style.display = 'block';
+    } else {
+      messageBox.style.display = 'none';
+    }
 
     if (freeGiftItem) {
       await removeFreeGift(freeGiftItem.key);
-      document.dispatchEvent(new Event('cart:updated'));
+      await handleFreeGift();
     }
   }
+
+  isProcessingFreeGift = false;
 }
 
-/* ===============================
-   INITIAL LOAD + CART UPDATES
-================================ */
+/* =========================================================
+   INIT + CART CHANGE LISTENERS
+========================================================= */
 document.addEventListener('DOMContentLoaded', handleFreeGift);
 document.addEventListener('cart:updated', handleFreeGift);
 
+(function () {
+  const originalFetch = window.fetch;
+  window.fetch = function () {
+    return originalFetch.apply(this, arguments).then(response => {
+      if (response.url.includes('/cart')) {
+        setTimeout(handleFreeGift, 300);
+      }
+      return response;
+    });
+  };
+})();
 </script>
 
 {% endif %}
@@ -143,8 +165,20 @@ document.addEventListener('cart:updated', handleFreeGift);
     {
       "type": "text",
       "id": "message_text",
-      "label": "Message Text",
+      "label": "Success Message",
       "default": "🎁 You've unlocked a free gift!"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress_message",
+      "label": "Show Progress Message",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "progress_message",
+      "label": "Progress Message",
+      "default": "Add {{amount}} more to get a free gift"
     }
   ]
 }
