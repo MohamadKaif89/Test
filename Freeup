@@ -1,0 +1,74 @@
+<script>
+  const threeSholdPrice = {{ settings.free_gift_threshold }};
+  const variantId = {{ freeproduct.selected_or_first_available_variant.id }};
+  const showProgress = {{ settings.free_gift_show_progress | json }};
+  const progressText = "{{ settings.free_gift_progress_message }}";
+
+  let isProcessing = false;
+
+  async function getFreeGift() {
+    if (isProcessing) return;
+    isProcessing = true;
+
+    const response = await fetch('/cart.js', { cache: 'no-store' });
+    const cartInfo = await response.json();
+
+    const cartTotalPr = Number((cartInfo.total_price / 100).toFixed(2));
+
+    const giftItem = cartInfo.items.find(
+      item => item.variant_id == variantId
+    );
+
+    const giftMsg = document.getElementById('free-gift-message');
+    const progressMsg = document.getElementById('free-gift-progress');
+
+    // ===== THRESHOLD MET =====
+    if (cartTotalPr >= threeSholdPrice) {
+
+      giftMsg.style.display = 'block';
+      progressMsg.style.display = 'none';
+
+      if (!giftItem) {
+        await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: variantId,
+            quantity: 1
+          })
+        });
+      }
+
+    }
+    // ===== BELOW THRESHOLD =====
+    else {
+
+      giftMsg.style.display = 'none';
+
+      if (showProgress) {
+        const remaining = (threeSholdPrice - cartTotalPr).toFixed(2);
+        progressMsg.innerText = progressText.replace('{{amount}}', remaining);
+        progressMsg.style.display = 'block';
+      }
+
+      if (giftItem) {
+        await fetch('/cart/change.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: giftItem.key,
+            quantity: 0
+          })
+        });
+      }
+    }
+
+    isProcessing = false;
+  }
+
+  // Initial run
+  document.addEventListener('DOMContentLoaded', getFreeGift);
+
+  // Re-run when cart changes
+  document.addEventListener('cart:updated', getFreeGift);
+</script>
