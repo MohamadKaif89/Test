@@ -1,0 +1,142 @@
+{
+  "name": "Free Gift",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "free_gift_enable",
+      "label": "Enable Free Gift",
+      "default": false
+    },
+    {
+      "type": "number",
+      "id": "free_gift_threshold",
+      "label": "Cart Threshold Amount",
+      "default": 1000
+    },
+    {
+      "type": "product",
+      "id": "free_gift_product",
+      "label": "Free Gift Product"
+    },
+    {
+      "type": "text",
+      "id": "free_gift_message",
+      "label": "Unlocked Message",
+      "default": "You’ve unlocked a free gift!"
+    },
+    {
+      "type": "checkbox",
+      "id": "free_gift_show_progress",
+      "label": "Show Progress Message",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "free_gift_progress_message",
+      "label": "Progress Message",
+      "default": "Add ₹{{amount}} more to get a free gift"
+    }
+  ]
+}
+
+{% if settings.free_gift_enable and settings.free_gift_product %}
+  <div
+    id="free-gift-config"
+    data-enabled="true"
+    data-threshold="{{ settings.free_gift_threshold | times: 100 }}"
+    data-variant-id="{{ settings.free_gift_product.selected_or_first_available_variant.id }}"
+    data-message="{{ settings.free_gift_message }}"
+    data-show-progress="{{ settings.free_gift_show_progress }}"
+    data-progress-message="{{ settings.free_gift_progress_message }}">
+  </div>
+{% endif %}
+
+<script src="{{ 'free-gift.js' | asset_url }}" defer></script>
+
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  const config = document.getElementById('free-gift-config');
+  if (!config) return;
+
+  const ENABLED = config.dataset.enabled === 'true';
+  const THRESHOLD = Number(config.dataset.threshold);
+  const GIFT_VARIANT_ID = Number(config.dataset.variantId);
+
+  if (!ENABLED || !GIFT_VARIANT_ID) return;
+
+  // Get cart data
+  async function getCart() {
+    const response = await fetch('/cart.js');
+    return response.json();
+  }
+
+  // Find free gift item in cart
+  function findGiftItem(cart) {
+    return cart.items.find(function (item) {
+      return item.variant_id === GIFT_VARIANT_ID;
+    });
+  }
+
+  // Add free gift
+  async function addGift() {
+    await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: GIFT_VARIANT_ID,
+        quantity: 1
+      })
+    });
+  }
+
+  // Remove free gift
+  async function removeGift() {
+    await fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: GIFT_VARIANT_ID,
+        quantity: 0
+      })
+    });
+  }
+
+  // Main logic
+  async function handleFreeGift() {
+    const cart = await getCart();
+    const giftItem = findGiftItem(cart);
+    const qualifies = cart.items_subtotal_price >= THRESHOLD;
+
+    // Add gift if qualified
+    if (qualifies && !giftItem) {
+      addGift();
+    }
+
+    // Remove gift if not qualified
+    if (!qualifies && giftItem) {
+      removeGift();
+    }
+
+    // Always keep quantity = 1
+    if (qualifies && giftItem && giftItem.quantity > 1) {
+      await fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: GIFT_VARIANT_ID,
+          quantity: 1
+        })
+      });
+    }
+  }
+
+  // Listen to cart changes (Dawn compatible)
+  document.addEventListener('cart:updated', handleFreeGift);
+  document.addEventListener('change', handleFreeGift);
+  document.addEventListener('click', handleFreeGift);
+
+  // Initial check
+  handleFreeGift();
+});
+
