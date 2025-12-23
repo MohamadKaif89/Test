@@ -1,0 +1,111 @@
+<script>
+  const threeSholdPrice = {{ settings.free_gift_threshold }};
+  const variantId = {{ freeproduct.selected_or_first_available_variant.id }};
+  const showProgress = {{ settings.free_gift_show_progress | json }};
+  const progressText = "{{ settings.free_gift_progress_message }}";
+
+  let running = false;
+
+  async function getCartData() {
+    const res = await fetch('/cart.js', { cache: 'no-store' });
+    return res.json();
+  }
+
+  async function addFreeGift() {
+    await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: variantId,
+        quantity: 1,
+        properties: { _free_gift: 'true' }
+      })
+    });
+  }
+
+  async function removeFreeGift(lineKey) {
+    await fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: lineKey,
+        quantity: 0
+      })
+    });
+  }
+
+  async function forceQtyOne(lineKey) {
+    await fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: lineKey,
+        quantity: 1
+      })
+    });
+  }
+
+  async function handleFreeGift() {
+    if (running) return;
+    running = true;
+
+    const cart = await getCartData();
+    const cartTotalPr = Number((cart.total_price / 100).toFixed(2));
+
+    const giftItem = cart.items.find(
+      item => item.variant_id == variantId
+    );
+
+    const giftMsg = document.getElementById('free-gift-message');
+    const progressMsg = document.getElementById('free-gift-progress');
+
+    // ===== ABOVE THRESHOLD =====
+    if (cartTotalPr >= threeSholdPrice) {
+
+      giftMsg.style.display = 'block';
+      progressMsg.style.display = 'none';
+
+      if (!giftItem) {
+        await addFreeGift();
+      } else if (giftItem.quantity !== 1) {
+        await forceQtyOne(giftItem.key);
+      }
+
+    }
+    // ===== BELOW THRESHOLD =====
+    else {
+
+      giftMsg.style.display = 'none';
+
+      if (showProgress) {
+        const remaining = (threeSholdPrice - cartTotalPr).toFixed(2);
+        progressMsg.innerText =
+          progressText.replace('{{amount}}', remaining);
+        progressMsg.style.display = 'block';
+      }
+
+      if (giftItem) {
+        await removeFreeGift(giftItem.key);
+      }
+    }
+
+    running = false;
+  }
+
+  // Run once on load
+  document.addEventListener('DOMContentLoaded', handleFreeGift);
+
+  // 🔥 MOST IMPORTANT PART
+  // Detect ANY cart Ajax update
+  (function () {
+    const originalFetch = window.fetch;
+    window.fetch = function () {
+      return originalFetch.apply(this, arguments).then(res => {
+        if (res.url.includes('/cart')) {
+          setTimeout(handleFreeGift, 300);
+        }
+        return res;
+      });
+    };
+  })();
+</script>
