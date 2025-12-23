@@ -1,0 +1,90 @@
+<h1> This is running {{settings.free_gift_threshold}}</h1>
+
+{% assign freeproduct = all_products[settings.free_gift_product]%}
+<h1>{{freeproduct.selected_or_first_available_variant.id}}</h1>
+
+<script>
+    const threeSholdPrice = {{ settings.free_gift_threshold }}
+    const variantId = {{ freeproduct.selected_or_first_available_variant.id }};
+    console.log(typeof variantId);
+    console.log("Threeshold price is", threeSholdPrice);
+
+    async function getFreeGift() {
+        const response = await fetch('/cart.js');
+        const cartInfo = await response.json();
+
+        const cartTotalPr = Number((cartInfo.total_price / 100).toFixed(2));
+        console.log("cart Total price", cartTotalPr);
+        console.log("cart items", cartInfo.items);
+
+        if (cartTotalPr > threeSholdPrice) {
+            if (cartInfo.items.find(ele => ele.variant_id == variantId)) {
+                console.log("Product is already added");
+
+            } else {
+                async function FreeGiftProductAdd() {
+                    await fetch('/cart/add.js', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            id: variantId,
+                            quantity: 1
+                        })
+                    })
+
+                }
+                FreeGiftProductAdd();
+                console.log("free product is added");
+
+            }
+        }
+
+    }
+setTimeout(()=>{
+    getFreeGift()
+},3000)
+</script>
+
+
+
+ {
+    "name": "Free Gift Threshold",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "free_gift_enable",
+        "label": "Enable Free Gift",
+        "default":true
+      },
+      {
+        "type": "number",
+        "id": "free_gift_threshold",
+        "label": "ThreeShold Amount",
+        "default":999
+      },
+      {
+        "type": "product",
+        "id": "free_gift_product",
+        "label": "Free Gift Product"
+      },
+      {
+        "type": "text",
+        "id": "free_gift_unlocked_message",
+        "label": "You’ve unlocked a free gift!"
+      },
+      {
+        "type": "checkbox",
+        "id": "free_gift_show_progress",
+        "label": "Show Progress Message",
+        "default":true
+      },
+      {
+        "type": "text",
+        "id": "free_gift_progress_message",
+        "label": "Progress Message",
+        "default": "Add ₹{{amount}} more to get a free gift"
+
+      }
+     
+    ]
+  }
