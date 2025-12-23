@@ -1,0 +1,48 @@
+<script>
+  const threeSholdPrice = {{ settings.free_gift_threshold }};
+  const variantId = {{ freeproduct.selected_or_first_available_variant.id }};
+
+  console.log('Free gift logic loaded');
+
+  async function handleFreeGift() {
+    const res = await fetch('/cart.js', { cache: 'no-store' });
+    const cart = await res.json();
+
+    const cartTotalPr = Number((cart.total_price / 100).toFixed(2));
+
+    console.log('Cart total:', cartTotalPr);
+
+    const giftItem = cart.items.find(
+      item => item.variant_id == variantId
+    );
+
+    // Threshold met → ensure gift exists
+    if (cartTotalPr >= threeSholdPrice && !giftItem) {
+      console.log('Adding free gift');
+      await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: variantId,
+          quantity: 1,
+          properties: { _free_gift: 'true' }
+        })
+      });
+    }
+
+    // Threshold not met → remove gift
+    if (cartTotalPr < threeSholdPrice && giftItem) {
+      console.log('Removing free gift');
+      await fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: giftItem.key,
+          quantity: 0
+        })
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', handleFreeGift);
+</script>
