@@ -1,0 +1,161 @@
+<h1> ThreeShold Price: {{settings.free_gift_threshold}}</h1>
+ {% assign freeproduct = all_products[settings.free_gift_product]%}
+<h1>{{freeproduct.selected_or_first_available_variant.id}}</h1> 
+
+{% style %} 
+   #free-gift-message{
+    margin: 10px 0;
+    color: green;
+    display: none;
+  }
+  #free-gift-progress{
+    margin: 10px 0;
+    color: orange;
+    display: none;
+  
+  }
+{% endstyle %}
+
+<script>
+  const enableFreeGift = {{settings.free_gift_enable | json}};
+  const threeSholdPrice = {{ settings.free_gift_threshold |  default: 0 | json }};
+  const variantId = {%  if settings.free_gift_enable and freeproduct %} 
+    {{freeproduct.selected_or_first_available_variant.id}}
+    {% else %}
+    null 
+    
+    {% endif %} 
+ 
+  const showProgress = {{ settings.free_gift_show_progress | json }};
+  const progressText = "{{ settings.free_gift_progress_message }}";
+
+
+  let running = false;
+
+
+  async function getCartData() {
+    console.log('Fetching cart.js');
+    const res = await fetch('/cart.js');
+    return res.json();
+  }
+
+  async function addFreeGift() {
+    console.log('Adding free gift variantId:', variantId);
+    await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: variantId,
+        quantity: 1,
+        properties: {_free_gift: 'true'}
+      })
+    });
+    console.log("free gift api finished");
+    
+  }
+   
+  async function removeFreeGift(lineKey) {
+    console.log('Removing free gift');
+    await fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: lineKey,
+        quantity: 0
+      })
+    });
+    console.log("free gift remove api finsihed");
+    
+  }
+
+  async function handleFreeGift() {
+    if(!enableFreeGift || !variantId){
+      console.log("Gift Settings off");
+      return;
+      
+    }
+    if (running) {
+      console.log("Skipped alraedy running");
+      
+     return;
+    }
+   
+    running = true;
+    console.log("handlefreegift started");
+    
+
+    const cart = await getCartData();
+    const cartTotalPr = Number((cart.total_price / 100).toFixed(2));
+
+    console.log('Cart total:', cartTotalPr);
+    console.log('Threshold:', threeSholdPrice);
+    
+
+    const giftItem = cart.items.find(
+      item => item.variant_id == variantId
+    );
+    console.log('gift item in cart', giftItem);
+    
+
+    const giftMsg = document.getElementById('free-gift-message');
+    const progressMsg = document.getElementById('free-gift-progress');
+
+    if (cartTotalPr >= threeSholdPrice) {
+      console.log("Threshold met");
+      
+      giftMsg.style.display = 'block';
+      progressMsg.style.display = 'none';
+
+      if (!giftItem) {
+        await addFreeGift();
+        // location.reload();
+        cartItemUpdate();
+       
+      }
+    } else {
+      console.log("belo threeshold");
+      
+      giftMsg.style.display = 'none';
+
+      if (showProgress) {
+        const remaining = (threeSholdPrice - cartTotalPr).toFixed(2);
+        progressMsg.innerText =
+          progressText.replace('{{amount}}', remaining);
+        progressMsg.style.display = 'block';
+        console.log("Progress message shown", remaining);
+        
+      }
+
+      if (giftItem) {
+        console.log("gift exists removing");
+        
+        await removeFreeGift(giftItem.key);
+        // location.reload();
+        // handleFreeGift()
+        cartItemUpdate();
+      }
+    }
+
+    running = false;
+    console.log("handlefreegift finished");
+    
+  }
+
+  handleFreeGift();
+
+  function cartItemUpdate(){
+    const url = "/?sections=main-cart-items";
+        fetch(url)
+        .then(res => res.json())
+        .then(res => {
+          console.log("cartitem update",res);
+          
+            const result = res['main-cart-items'];
+            const html = new DOMParser().parseFromString(result, 'text/html').querySelector('cart-items')
+            document.querySelector('cart-items').innerHTML = html.innerHTML
+            console.log("Html", html);
+        })
+  }
+  
+
+</script>
