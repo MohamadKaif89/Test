@@ -1,0 +1,131 @@
+<style>
+.inner-main-div{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+
+.look-section{
+  margin-bottom:60px;
+  border-bottom:1px solid #eee;
+  padding-bottom:25px;
+}
+
+.look-title{
+  font-size:24px;
+  margin-bottom:10px;
+}
+
+.look-main img{
+  width:100%;
+  border-radius:6px;
+  margin-bottom:15px;
+}
+
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+}
+
+.product-card{
+  border:1px solid #ddd;
+  padding:10px;
+  border-radius:6px;
+  text-align:center;
+  text-decoration:none;
+  background:#fff;
+}
+
+.product-card img{
+  width:100%;
+  border-radius:4px;
+}
+
+.missing{
+  border:1px dashed #bbb;
+  padding:22px;
+  text-align:center;
+}
+
+@media(max-width:768px){
+  .product-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+
+<script>
+async function getAllProduct(){
+  try{
+
+    const res = await fetch('https://cdn.shopify.com/s/files/1/0582/3637/1076/files/LookBook.csv?v=1766746038');
+    const data = await res.text();
+
+    // get rows except header
+    const rows = data.trim().split('\n').slice(1);
+
+    const wrap = document.querySelector('.inner-main-div');
+
+    rows.forEach(row => {
+
+      // 4 columns from CSV
+      const [title, image, handles, customImages] = row.split(',');
+
+      // split product handles (pipe separated)
+      const handleList = handles ? handles.split('|') : [];
+
+      // split custom images (pipe separated)
+      const customList = customImages ? customImages.split('|') : [];
+
+      // section for this look
+      const section = document.createElement("div");
+      section.className = "look-section";
+
+      section.innerHTML = `
+        <h2 class="look-title">${title}</h2>
+
+        <div class="look-main">
+          <img src="${image}" alt="${title}">
+        </div>
+
+        <div class="product-grid"></div>
+      `;
+
+      const grid = section.querySelector(".product-grid");
+
+      // add products
+      handleList.forEach((h, i) => {
+
+        if(!h) return;
+
+        const handle = h.replaceAll('"','').trim();
+        const productUrl = "/products/" + handle;
+
+        const customImg = customList[i] || "";
+
+        const card = document.createElement("a");
+        card.className = "product-card";
+        card.href = productUrl;
+
+        card.innerHTML = `
+          <img src="${customImg}"
+            onerror="this.closest('.product-card').outerHTML='<div class=&quot;product-card missing&quot;>Product not available</div>'">
+          <p>${handle}</p>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      wrap.appendChild(section);
+
+    });
+
+  }catch(err){
+    console.log("something went wrong", err);
+  }
+}
+
+getAllProduct();
+</script>
+
