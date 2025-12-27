@@ -1,0 +1,35 @@
+<div class="inner-main-div"></div>
+
+
+<script src="{{ 'lookbook.js' | asset_url }}" defer> </script>
+
+
+
+async function getAllProduct(){
+ try{
+    const res = await fetch('https://cdn.shopify.com/s/files/1/0582/3637/1076/files/LookBook.csv?v=1766746038');
+    const data = await res.text();
+    console.log(data);
+    const rows = data.trim().split('\n').slice(1);
+    console.log(rows);
+
+    rows.forEach((row) =>{
+    const [title, image, handles] = row.split(',');
+    console.log(title, image, handles);
+    const x = handles.replace(/[""]/g, '').trim();
+    console.log("handle:", x);
+    const innerMainDiv = document.querySelector('.inner-main-div');
+    innerMainDiv.innerHTML += `
+    <div class="item">
+    <a href="/products/${x}">
+     <h3>${title}</h3>
+     <img src="${image}" alt="${title}">
+    </a>
+    </div>
+    `
+ })
+    }catch{
+    console.log("something went wrong");
+    }
+}
+getAllProduct();
