@@ -1,0 +1,24 @@
+handleList.forEach((h, i) => {
+
+  if(!h) return;
+
+  const handle = h.replaceAll('"','').trim();
+
+  if(!handle){
+    return;
+  }
+
+  const productUrl = "/products/" + handle;
+  const customImg = customList[i] || "/placeholder.png";
+
+  const card = document.createElement("a");
+  card.className = "product-card";
+  card.href = productUrl;
+
+  card.innerHTML = `
+    <img src="${customImg}">
+    <p>${handle}</p>
+  `;
+
+  grid.appendChild(card);
+});
