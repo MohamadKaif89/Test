@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Parent Child Tree</title>
+
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    ul{
+      list-style-type: none;
+      padding-left: 20px;
+      margin: 5px 0;
+    }
+
+    li{
+      margin: 4px 0;
+      padding: 6px 10px;
+      background:#f4f4f4;
+      border-radius: 6px;
+      border:1px solid #ddd;
+      width: fit-content;
+    }
+
+    li ul li{
+      background:#e8f3ff;
+    }
+
+    li ul li ul li{
+      background:#ffe8e8;
+    }
+  </style>
+
+</head>
+<body>
+
+  <h2>Parent → Child Tree</h2>
+
+  <div id="menu"></div>
+
+  <script>
+    // Your flat data
+    const data = [
+      {id: 1, name: 'xyz', parent: 0},
+      {id: 2, name: 'xyz-1', parent: 1},
+      {id: 3, name: 'xyz-2', parent: 1},
+      {id: 4, name: 'xyz-1-1', parent: 2}
+    ];
+
+    // Build tree (recursive)
+    function buildTree(list, parent = 0) {
+      return list
+        .filter(item => item.parent === parent)
+        .map(item => ({
+          ...item,
+          children: buildTree(list, item.id)
+        }));
+    }
+
+    const tree = buildTree(data);
+
+    // Convert tree → HTML (recursive)
+    function toHtml(nodes) {
+      if (!nodes.length) return "";
+
+      return `
+        <ul>
+          ${nodes.map(n => `
+            <li>
+              ${n.name}
+              ${toHtml(n.children)}
+            </li>
+          `).join('')}
+        </ul>
+      `;
+    }
+
+    // Insert into page
+    document.getElementById("menu").innerHTML = toHtml(tree);
+  </script>
+
+</body>
+</html>
