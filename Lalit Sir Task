@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Parent Child Tree</title>
+  <title>Office Employee Hierarchy</title>
 
   <style>
     body{
@@ -9,47 +9,61 @@
       padding: 20px;
     }
 
-    ul{
-      list-style-type: none;
-      padding-left: 20px;
-      margin: 5px 0;
-    }
-
-    li{
-      margin: 4px 0;
-      padding: 6px 10px;
-      background:#f4f4f4;
-      border-radius: 6px;
-      border:1px solid #ddd;
+    .employee-box{
+      border: 1px solid #ccc;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background:#f8faff;
+      margin: 6px 0;
       width: fit-content;
+      box-shadow: 0 2px 4px rgba(0,0,0,.08);
+      cursor: pointer;
+      position: relative;
     }
 
-    li ul li{
-      background:#e8f3ff;
+    .employee-box:hover{
+      background:#eef5ff;
     }
 
-    li ul li ul li{
-      background:#ffe8e8;
+    .children{
+      margin-left: 30px;
+      border-left: 2px dashed #ddd;
+      padding-left: 15px;
+    }
+
+    .role{
+      color:#777;
+      font-size: 12px;
+    }
+
+    .toggle{
+      font-weight: bold;
+      color:#007bff;
+      margin-right: 6px;
     }
   </style>
-
 </head>
+
 <body>
 
-  <h2>Parent → Child Tree</h2>
+  <h2>Office Employees — Expand / Collapse</h2>
 
-  <div id="menu"></div>
+  <p>Click any employee to expand or collapse their team.</p>
+
+  <div id="tree"></div>
 
   <script>
-    // Your flat data
-    const data = [
-      {id: 1, name: 'xyz', parent: 0},
-      {id: 2, name: 'xyz-1', parent: 1},
-      {id: 3, name: 'xyz-2', parent: 1},
-      {id: 4, name: 'xyz-1-1', parent: 2}
+    // --- Employee Data ---
+    const employees = [
+      { id: 1, name: "John Smith", role: "CEO", parent: 0 },
+      { id: 2, name: "Sarah Lee", role: "Manager", parent: 1 },
+      { id: 3, name: "David Kumar", role: "Team Lead", parent: 2 },
+      { id: 4, name: "Aditi Sharma", role: "Software Engineer", parent: 3 },
+      { id: 5, name: "Michael Brown", role: "Manager", parent: 1 },
+      { id: 6, name: "Priya Patel", role: "QA Engineer", parent: 5 }
     ];
 
-    // Build tree (recursive)
+    // --- Build Tree ---
     function buildTree(list, parent = 0) {
       return list
         .filter(item => item.parent === parent)
@@ -59,8 +73,54 @@
         }));
     }
 
-    const tree = buildTree(data);
+    const tree = buildTree(employees);
 
+    // --- Create HTML ---
+    function toHtml(nodes){
+      if(!nodes.length) return "";
+
+      return nodes.map(n => `
+        <div class="employee-box" onclick="toggleChildren(event)">
+          <span class="toggle">➤</span>
+          <strong>${n.name}</strong><br>
+          <span class="role">${n.role}</span>
+
+          <div class="children">
+            ${toHtml(n.children)}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    document.getElementById("tree").innerHTML = toHtml(tree);
+
+    // --- Toggle Children ---
+    function toggleChildren(event){
+      event.stopPropagation(); // stop bubbling
+
+      const box = event.currentTarget;
+      const children = box.querySelector(":scope > .children");
+      const arrow = box.querySelector(":scope > .toggle");
+
+      if(!children) return;
+
+      if(children.style.display === "none"){
+        children.style.display = "block";
+        arrow.textContent = "➤";
+      } else {
+        children.style.display = "none";
+        arrow.textContent = "▼";
+      }
+    }
+
+    // --- Start collapsed except CEO ---
+    document.querySelectorAll(".children").forEach((div, index) => {
+      if(index !== 0) div.style.display = "none";
+    });
+  </script>
+
+</body>
+</html>
     // Convert tree → HTML (recursive)
     function toHtml(nodes) {
       if (!nodes.length) return "";
