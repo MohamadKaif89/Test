@@ -1,63 +1,98 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Office Employee Hierarchy</title>
+  <title>Employees Tree</title>
 
   <style>
-    body{
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-
-    .employee-box{
+    .employee{
       border: 1px solid #ccc;
-      padding: 10px 14px;
-      border-radius: 10px;
-      background:#f8faff;
-      margin: 6px 0;
-      width: fit-content;
-      box-shadow: 0 2px 4px rgba(0,0,0,.08);
+      padding: 5px;
+      margin: 5px 0;
       cursor: pointer;
-      position: relative;
-    }
-
-    .employee-box:hover{
-      background:#eef5ff;
+      width: fit-content;
     }
 
     .children{
-      margin-left: 30px;
-      border-left: 2px dashed #ddd;
-      padding-left: 15px;
-    }
-
-    .role{
-      color:#777;
-      font-size: 12px;
-    }
-
-    .toggle{
-      font-weight: bold;
-      color:#007bff;
-      margin-right: 6px;
+      margin-left: 25px;
     }
   </style>
 </head>
 
 <body>
 
-  <h2>Office Employees — Expand / Collapse</h2>
+<h3>Office Employees</h3>
 
-  <p>Click any employee to expand or collapse their team.</p>
+<div id="tree"></div>
 
-  <div id="tree"></div>
+<script>
+  // employee data
+  const data = [
+    {id:1, name:"John Smith - CEO", parent:0},
+    {id:2, name:"Sarah Lee - Manager", parent:1},
+    {id:3, name:"David Kumar - Team Lead", parent:2},
+    {id:4, name:"Aditi Sharma - Developer", parent:3},
+    {id:5, name:"Michael Brown - Manager", parent:1},
+    {id:6, name:"Priya Patel - QA", parent:5}
+  ];
 
-  <script>
-    // --- Employee Data ---
-    const employees = [
-      { id: 1, name: "John Smith", role: "CEO", parent: 0 },
-      { id: 2, name: "Sarah Lee", role: "Manager", parent: 1 },
-      { id: 3, name: "David Kumar", role: "Team Lead", parent: 2 },
+  // build tree from parent ids
+  function makeTree(parentId){
+    let result = [];
+
+    for(let i=0; i<data.length; i++){
+      if(data[i].parent === parentId){
+        let obj = data[i];
+        obj.children = makeTree(obj.id);
+        result.push(obj);
+      }
+    }
+    return result;
+  }
+
+  let tree = makeTree(0);
+
+  // create html
+  function showEmployees(list){
+    let html = "";
+
+    for(let i=0; i<list.length; i++){
+      html += `
+        <div class="employee" onclick="toggle(this)">
+          ${list[i].name}
+          <div class="children">
+            ${showEmployees(list[i].children)}
+          </div>
+        </div>
+      `;
+    }
+
+    return html;
+  }
+
+  document.getElementById("tree").innerHTML = showEmployees(tree);
+
+  // expand / collapse
+  function toggle(el){
+    event.stopPropagation();
+
+    let c = el.querySelector(".children");
+
+    if(c.style.display === "none"){
+      c.style.display = "block";
+    } else {
+      c.style.display = "none";
+    }
+  }
+
+  // start collapsed
+  let all = document.querySelectorAll(".children");
+  for(let i=1; i<all.length; i++){
+    all[i].style.display = "none";
+  }
+</script>
+
+</body>
+</html>
       { id: 4, name: "Aditi Sharma", role: "Software Engineer", parent: 3 },
       { id: 5, name: "Michael Brown", role: "Manager", parent: 1 },
       { id: 6, name: "Priya Patel", role: "QA Engineer", parent: 5 }
