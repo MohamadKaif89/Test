@@ -5,15 +5,12 @@ async function getAllProduct(){
     const res = await fetch('https://cdn.shopify.com/s/files/1/0582/3637/1076/files/LookBook.csv?v=1766746038');
     const data = await res.text();
 
-    // skip header row
     const rows = data.trim().split('\n').slice(1);
 
     const wrap = document.querySelector('.inner-main-div');
 
     rows.forEach(row => {
 
-      // CSV FORMAT:
-      // title, look_image, product_handles
       const [title, lookImg, handles] = row.split(',');
 
       const section = document.createElement("div");
@@ -21,28 +18,23 @@ async function getAllProduct(){
 
       section.innerHTML = `
         <h2 class="look-title">${title}</h2>
-
         <div class="look-main">
           <img src="${lookImg}" alt="${title}">
         </div>
-
         <div class="product-grid"></div>
       `;
 
       const grid = section.querySelector('.product-grid');
 
-      // split product handles → pipe |
-      const handleList = handles ? handles.split('|') : [];
+      // 👇 FIX IS HERE
+      const handleList = handles
+        ? handles.split('|').map(h => h.trim()).filter(h => h)
+        : [];
 
       handleList.forEach(async h => {
 
-        if(!h) return;
-
-        const handle = h.replaceAll('"','').trim();
-
         try{
-          // get product data from Shopify
-          const p = await fetch(`/products/${handle}.js`);
+          const p = await fetch(`/products/${h}.js`);
           if(!p.ok) throw new Error();
 
           const product = await p.json();
@@ -59,7 +51,6 @@ async function getAllProduct(){
           grid.appendChild(card);
 
         }catch(e){
-          // only when handle is really invalid
           const missing = document.createElement("div");
           missing.className = "product-card missing";
           missing.innerText = "Product not available";
