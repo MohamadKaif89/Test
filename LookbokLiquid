@@ -1,0 +1,96 @@
+{% comment %}
+CSV DATA — paste here
+Format:
+look_title,look_image,product_handles
+products are | pipe separated
+{% endcomment %}
+
+{% assign csv = "
+Summer Look,https://cdn.shopify.com/summer.jpg,tshirt-blue|jeans-black|white-shoes
+Winter Style,https://cdn.shopify.com/winter.jpg,hoodie-grey|beanie-hat
+Street Wear,https://cdn.shopify.com/street.jpg,jacket-denim
+" %}
+
+{% assign rows = csv | strip | split: '\n' | slice: 1 %}
+
+<div class="lookbook-wrapper">
+
+  {% for row in rows %}
+    {% assign cols = row | split: ',' %}
+    {% assign look_title = cols[0] %}
+    {% assign look_image = cols[1] %}
+    {% assign handles = cols[2] | split: '|' %}
+
+    <section class="look">
+      <h2>{{ look_title }}</h2>
+
+      <div class="look-image">
+        <img src="{{ look_image }}" alt="{{ look_title }}">
+      </div>
+
+      <div class="products">
+        {% for h in handles %}
+          {% assign handle = h | strip %}
+          {% if handle != blank %}
+            {% assign product = all_products[handle] %}
+
+            {% if product %}
+              <a class="product" href="{{ product.url }}">
+                <img src="{{ product.featured_image | img_url: '400x' }}">
+                <p>{{ product.title }}</p>
+              </a>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+
+  {% endfor %}
+
+</div>
+
+<style>
+.lookbook-wrapper{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+
+.look{
+  margin-bottom:50px;
+  border-bottom:1px solid #eee;
+  padding-bottom:25px;
+}
+
+.look-image img{
+  width:100%;
+  border-radius:6px;
+  margin-bottom:15px;
+}
+
+.products{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+}
+
+.product{
+  border:1px solid #ddd;
+  padding:10px;
+  border-radius:6px;
+  text-align:center;
+  text-decoration:none;
+  color:#000;
+}
+
+.product img{
+  width:100%;
+  border-radius:4px;
+}
+
+@media(max-width:768px){
+  .products{
+    grid-template-columns:1fr;
+  }
+}
+</style>
