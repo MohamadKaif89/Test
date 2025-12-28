@@ -1,0 +1,92 @@
+async function getAllProducts() {
+
+  // This function loads your CSV and then loads products by handle
+  try {
+
+    // 1️⃣ Get your CSV file
+    const response = await fetch('https://cdn.shopify.com/s/files/1/0582/3637/1076/files/updated-new.csv?v=1766912121');
+    const csvText = await response.text();
+
+    // 2️⃣ Split CSV into lines & remove the header row
+    const lines = csvText.trim().split('\n');
+    const productLines = lines.slice(1); // skip header
+
+    // 3️⃣ Get the main wrapper
+    const container = document.querySelector('.look-container');
+
+    // 4️⃣ Go through each row in CSV
+    for (let line of productLines) {
+
+      // CSV format = title,image,handle1|handle2|handle3
+      const parts = line.split(',');
+      const title = parts[0];
+      const lookImage = parts[1];
+      const handleString = parts[2];
+
+      // Create section wrapper
+      const section = document.createElement('div');
+      section.className = 'look-section';
+
+      // Add title + main image + grid box
+      section.innerHTML = `
+        <h2 class="look-title">${title}</h2>
+        <div class="look-main">
+          <img src="${lookImage}" alt="${title}">
+        </div>
+        <div class="product-grid"></div>
+      `;
+
+      const gridBox = section.querySelector('.product-grid');
+
+      // 5️⃣ Convert handle string into array
+      let handleList = [];
+
+      if (handleString) {
+        handleList = handleString
+          .split('|')
+          .map(item => item.trim())
+          .filter(item => item !== '');
+      }
+
+      // 6️⃣ Load each product using its handle
+      for (let handle of handleList) {
+
+        try {
+          const productRes = await fetch(`/products/${handle}.js`);
+
+          if (!productRes.ok) {
+            console.log("Product not found:", handle);
+            continue;
+          }
+
+          const product = await productRes.json();
+
+          // Create product card
+          const card = document.createElement('a');
+          card.className = 'product-card';
+          card.href = product.url;
+
+          card.innerHTML = `
+            <img src="${product.images[0]}" alt="${product.title}">
+            <p>${product.title}</p>
+            <p>RS: ${product.price}</p>
+          `;
+
+          gridBox.appendChild(card);
+
+        } catch (error) {
+          console.log("Could not load product:", handle, error);
+        }
+      }
+
+      // 7️⃣ Finally add the section into container
+      container.appendChild(section);
+    }
+
+  } catch (err) {
+    console.log("Something went wrong loading CSV", err);
+  }
+}
+
+// Call the function
+getAllProducts();
