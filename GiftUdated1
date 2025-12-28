@@ -1,24 +1,81 @@
-handleList.forEach((h, i) => {
+<script>
+async function getAllProduct(){
+  try{
 
-  if(!h) return;
+    const res = await fetch('https://cdn.shopify.com/s/files/1/0582/3637/1076/files/LookBook.csv?v=1766746038');
+    const data = await res.text();
 
-  const handle = h.replaceAll('"','').trim();
+    // skip header row
+    const rows = data.trim().split('\n').slice(1);
 
-  if(!handle){
-    return;
+    const wrap = document.querySelector('.inner-main-div');
+
+    rows.forEach(row => {
+
+      // CSV FORMAT:
+      // title, look_image, product_handles
+      const [title, lookImg, handles] = row.split(',');
+
+      const section = document.createElement("div");
+      section.className = "look-section";
+
+      section.innerHTML = `
+        <h2 class="look-title">${title}</h2>
+
+        <div class="look-main">
+          <img src="${lookImg}" alt="${title}">
+        </div>
+
+        <div class="product-grid"></div>
+      `;
+
+      const grid = section.querySelector('.product-grid');
+
+      // split product handles → pipe |
+      const handleList = handles ? handles.split('|') : [];
+
+      handleList.forEach(async h => {
+
+        if(!h) return;
+
+        const handle = h.replaceAll('"','').trim();
+
+        try{
+          // get product data from Shopify
+          const p = await fetch(`/products/${handle}.js`);
+          if(!p.ok) throw new Error();
+
+          const product = await p.json();
+
+          const card = document.createElement("a");
+          card.className = "product-card";
+          card.href = product.url;
+
+          card.innerHTML = `
+            <img src="${product.images[0]}" alt="${product.title}">
+            <p>${product.title}</p>
+          `;
+
+          grid.appendChild(card);
+
+        }catch(e){
+          // only when handle is really invalid
+          const missing = document.createElement("div");
+          missing.className = "product-card missing";
+          missing.innerText = "Product not available";
+          grid.appendChild(missing);
+        }
+
+      });
+
+      wrap.appendChild(section);
+
+    });
+
+  }catch(err){
+    console.log("something went wrong", err);
   }
+}
 
-  const productUrl = "/products/" + handle;
-  const customImg = customList[i] || "/placeholder.png";
-
-  const card = document.createElement("a");
-  card.className = "product-card";
-  card.href = productUrl;
-
-  card.innerHTML = `
-    <img src="${customImg}">
-    <p>${handle}</p>
-  `;
-
-  grid.appendChild(card);
-});
+getAllProduct();
+</script>
