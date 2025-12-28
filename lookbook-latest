@@ -1,0 +1,69 @@
+async function getAllProduct(){
+  try{
+
+    const res = await fetch('https://cdn.shopify.com/s/files/1/0582/3637/1076/files/updated-new.csv?v=1766912121');
+    const data = await res.text();
+
+    const rows = data.trim().split('\n').slice(1);
+
+    const wrap = document.querySelector('.look-container');
+
+    rows.forEach(row => {
+
+      const [title, lookImg, handles] = row.split(',');
+
+      const section = document.createElement("div");
+      section.className = "look-section";
+
+      section.innerHTML = `
+        <h2 class="look-title">${title}</h2>
+        <div class="look-main">
+          <img src="${lookImg}" alt="${title}">
+        </div>
+        <div class="product-grid"></div>
+      `;
+
+      const grid = section.querySelector('.product-grid');
+
+      const handleList = handles? handles.split('|').map(h => h.trim()).filter(h => h): [];
+
+      handleList.forEach(async h => {
+
+        try{
+          const p = await fetch(`/products/${h}.js`);
+          if(!p.ok) throw new Error();
+
+          const product = await p.json();
+
+          const card = document.createElement("a");
+          card.className = "product-card";
+          card.href = product.url;
+
+          card.innerHTML = `
+            <img src="${product.images[0]}" alt="${product.title}">
+            <p>${product.title}</p>
+            <p>RS: ${product.price}</p>
+          `;
+
+          grid.appendChild(card);
+
+        }catch(e){
+           console.log("Error Adding product", e);
+           
+        }
+
+      });
+
+      wrap.appendChild(section);
+
+    });
+
+  }catch(err){
+    console.log("something went wrong", err);
+  }
+}
+
+getAllProduct();
+
+
+
