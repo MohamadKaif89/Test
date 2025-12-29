@@ -1,3 +1,35 @@
+<h1> ThreeShold Price: {{settings.free_gift_threshold}}</h1>
+{% comment %} its finding the free gift product slected in theme  {% endcomment %}
+ {% assign freeproduct = all_products[settings.free_gift_product]%}
+<h1>{{freeproduct.selected_or_first_available_variant.id}}</h1> 
+{%  assign p1  = all_products[settings.free_gift_product_1]  %}
+{%  assign p2  = all_products[settings.free_gift_product_2]  %}
+{%  assign p3  = all_products[settings.free_gift_product_3]  %}
+
+{% assign v1  = p1.selected_or_first_available_variant.id  %}
+{% assign v2  = p2.selected_or_first_available_variant.id  %}
+{% assign v3  = p3.selected_or_first_available_variant.id  %}
+
+{% style %} 
+   #free-gift-message{
+    margin: 10px 0;
+    color: green;
+    display: none;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+  }
+  #free-gift-progress{
+    margin: 10px 0;
+    color: orange;
+    display: none;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+  }
+{% endstyle %}
+
+
 <script>
   const enableFreeGift = {{settings.free_gift_enable}};
   const showProgress = {{ settings.free_gift_show_progress | json }};
