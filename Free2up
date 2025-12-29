@@ -1,0 +1,153 @@
+<script>
+  const enableFreeGift = {{settings.free_gift_enable}};
+  const showProgress = {{ settings.free_gift_show_progress | json }};
+  const progressText = {{ settings.free_gift_progress_message | json }};
+  let running = false;
+
+  // ---- TIER SETTINGS FROM SECTION ----
+  // example output →  [{threshold:2000,variant:123},{threshold:3000,variant:456}]
+  const tierList = [{{ tiers | default:'' }}];
+
+  // fallback to old single threshold if no tiers exist
+  const threeSholdPrice = {{ settings.free_gift_threshold | default:0 }};
+  const variantId = {{freeproduct.selected_or_first_available_variant.id | default:0}};
+
+  async function getCartData() {
+    const res = await fetch('/cart.js');
+    return res.json();
+  }
+
+  async function addFreeGift(id) {
+    await fetch('/cart/add.js',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        id:id,
+        quantity:1,
+        properties:{_free_gift:'true'}
+      })
+    });
+  }
+
+  async function removeFreeGift(key) {
+    await fetch('/cart/change.js',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        id:key,
+        quantity:0
+      })
+    });
+  }
+
+  async function handleFreeGift(){
+
+    if(!enableFreeGift){
+      return;
+    }
+
+    if(running){
+      return;
+    }
+
+    running = true;
+
+    const cart = await getCartData();
+    const cartTotal = cart.total_price/100;
+
+    // detect existing gift in cart
+    const giftItem = cart.items.find(
+      i => tierList.some(t=> t.variant == i.variant_id) || i.variant_id == variantId
+    );
+
+    const giftMsg = document.getElementById('free-gift-message');
+    const progressMsg = document.getElementById('free-gift-progress');
+
+    // -------- determine active tier --------
+    let activeTier = null;
+
+    tierList.forEach(t=>{
+      if(cartTotal >= t.threshold){
+        activeTier = t;
+      }
+    });
+
+    // fallback to old behaviour if NO tiers config
+    if(!activeTier && cartTotal >= threeSholdPrice){
+      activeTier = {variant:variantId,threshold:threeSholdPrice};
+    }
+
+    // -------- progress message --------
+    const lowestTier = tierList.length ? Math.min(...tierList.map(t=>t.threshold)) : threeSholdPrice;
+
+    if(showProgress && cartTotal < lowestTier){
+      const remain = (lowestTier - cartTotal).toFixed(2);
+      progressMsg.innerText = progressText.replace('{{amount}}',remain);
+      progressMsg.style.display='block';
+    } else {
+      progressMsg.style.display='none';
+    }
+
+    // -------- NO ACTIVE TIER → remove gift --------
+    if(!activeTier){
+
+      giftMsg.style.display='none';
+
+      if(giftItem){
+        await removeFreeGift(giftItem.key);
+        cartItemUpdate();
+      }
+
+      running = false;
+      return;
+    }
+
+    // -------- SHOW MESSAGE --------
+    giftMsg.style.display='block';
+
+    // -------- WRONG GIFT IN CART → REPLACE --------
+    if(giftItem && giftItem.variant_id != activeTier.variant){
+      await removeFreeGift(giftItem.key);
+      await addFreeGift(activeTier.variant);
+      cartItemUpdate();
+      running = false;
+      return;
+    }
+
+    // -------- FIX QTY --------
+    if(giftItem && giftItem.quantity != 1){
+      await fetch('/cart/change.js',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          id: giftItem.key,
+          quantity: 1
+        })
+      });
+      cartItemUpdate();
+      running = false;
+      return;
+    }
+
+    // -------- ADD NEW GIFT --------
+    if(!giftItem){
+      await addFreeGift(activeTier.variant);
+      cartItemUpdate();
+    }
+
+    running = false;
+  }
+
+  handleFreeGift();
+
+  function cartItemUpdate(){
+    fetch("/?sections=main-cart-items")
+    .then(r=>r.json())
+    .then(r=>{
+      const html = new DOMParser()
+      .parseFromString(r['main-cart-items'],'text/html')
+      .querySelector('cart-items');
+      document.querySelector('cart-items').innerHTML = html.innerHTML;
+    });
+  }
+</script>
