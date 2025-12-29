@@ -36,12 +36,12 @@
 {% endstyle %}
 
 <script>
-  const enableFreeGift = {{settings.free_gift_enable}};
-  const threeSholdPrice = {{ settings.free_gift_threshold }};
+  const enableFreeGift = {{section.settings.free_gift_enable |  default: 0}};
+  const threeSholdPrice = {{ section.settings.free_gift_threshold |  default: 0 }};
   const variantId = {{freeproduct.selected_or_first_available_variant.id | default: 0}};
    
-  const showProgress = {{ settings.free_gift_show_progress | json }};
-  const progressText = {{ settings.free_gift_progress_message | json }};
+  const showProgress = {{ section.settings.free_gift_show_progress | json }};
+  const progressText = {{ section.settings.free_gift_progress_message | json }};
   const tierList = [{{tiers |  default: ''}}];
   let running = false;
 // its removing free gift if gift setting disabled
@@ -127,7 +127,7 @@
       }
     });
     console.log("Active tier", activeTier);
-    const = lowestTier = tierList.length ? Math.min(...tierList.map(t=>t.threshold)) : threeSholdPrice;
+    const  lowestTier = tierList.length ? Math.min(...tierList.map(t=>t.threshold)) : threeSholdPrice;
 
     
       if (showProgress && cartTotalPr < lowestTier) {
@@ -154,7 +154,7 @@
     return;
     console.log("handlefreegift finished");
     
-  }
+  
   giftMsg.style.display = 'block';
   // wrrong gift replace it
   if(giftItem && giftItem.variant_id != activeTier.variant){
