@@ -1,48 +1,22 @@
-<h1> ThreeShold Price: {{settings.free_gift_threshold}}</h1>
-{% comment %} its finding the free gift product slected in theme  {% endcomment %}
- {% assign freeproduct = all_products[settings.free_gift_product]%}
-<h1>{{freeproduct.selected_or_first_available_variant.id}}</h1> 
-{%  assign p1  = all_products[settings.free_gift_product_1]  %}
-{%  assign p2  = all_products[settings.free_gift_product_2]  %}
-{%  assign p3  = all_products[settings.free_gift_product_3]  %}
-
-{% assign v1  = p1.selected_or_first_available_variant.id  %}
-{% assign v2  = p2.selected_or_first_available_variant.id  %}
-{% assign v3  = p3.selected_or_first_available_variant.id  %}
-
-{% style %} 
-   #free-gift-message{
-    margin: 10px 0;
-    color: green;
-    display: none;
-    text-align: center;
-    font-size: 2rem;
-    font-weight: 800;
-  }
-  #free-gift-progress{
-    margin: 10px 0;
-    color: orange;
-    display: none;
-    text-align: center;
-    font-size: 2rem;
-    font-weight: 800;
-  }
-{% endstyle %}
-
-
 <script>
   const enableFreeGift = {{settings.free_gift_enable}};
   const showProgress = {{ settings.free_gift_show_progress | json }};
   const progressText = {{ settings.free_gift_progress_message | json }};
   let running = false;
 
-  // ---- TIER SETTINGS FROM SECTION ----
-  // example output →  [{threshold:2000,variant:123},{threshold:3000,variant:456}]
-  const tierList = [{{ tiers | default:'' }}];
+  // your old single tier (keep as-is)
+  const threeSholdPrice = {{ settings.free_gift_threshold | default: 0 }};
+  const variantId = {{freeproduct.selected_or_first_available_variant.id | default: 0}};
 
-  // fallback to old single threshold if no tiers exist
-  const threeSholdPrice = {{ settings.free_gift_threshold | default:0 }};
-  const variantId = {{freeproduct.selected_or_first_available_variant.id | default:0}};
+  // ---- NEW : YOUR 3 GIFT VARIANTS ----
+  const v1 = {{ v1 | default: 0 }};
+  const v2 = {{ v2 | default: 0 }};
+  const v3 = {{ v3 | default: 0 }};
+
+  // ---- NEW : YOUR 3 THRESHOLDS ----
+  const t1 = {{ settings.free_gift_threshold_1 | default: 0 }};
+  const t2 = {{ settings.free_gift_threshold_2 | default: 0 }};
+  const t3 = {{ settings.free_gift_threshold_3 | default: 0 }};
 
   async function getCartData() {
     const res = await fetch('/cart.js');
@@ -87,41 +61,41 @@
     const cart = await getCartData();
     const cartTotal = cart.total_price/100;
 
-    // detect existing gift in cart
+    // find gift currently in cart
     const giftItem = cart.items.find(
-      i => tierList.some(t=> t.variant == i.variant_id) || i.variant_id == variantId
+      i => [variantId,v1,v2,v3].includes(i.variant_id)
     );
 
     const giftMsg = document.getElementById('free-gift-message');
     const progressMsg = document.getElementById('free-gift-progress');
 
-    // -------- determine active tier --------
-    let activeTier = null;
+    // ---------- SELECT ACTIVE TIER ----------
+    let activeVariant = null;
 
-    tierList.forEach(t=>{
-      if(cartTotal >= t.threshold){
-        activeTier = t;
-      }
-    });
-
-    // fallback to old behaviour if NO tiers config
-    if(!activeTier && cartTotal >= threeSholdPrice){
-      activeTier = {variant:variantId,threshold:threeSholdPrice};
+    if(cartTotal >= t3 && v3){
+      activeVariant = v3;
+    }else if(cartTotal >= t2 && v2){
+      activeVariant = v2;
+    }else if(cartTotal >= t1 && v1){
+      activeVariant = v1;
+    }else if(cartTotal >= threeSholdPrice && variantId){
+      activeVariant = variantId;
     }
 
-    // -------- progress message --------
-    const lowestTier = tierList.length ? Math.min(...tierList.map(t=>t.threshold)) : threeSholdPrice;
+    // ---------- PROGRESS MESSAGE ----------
+    const allThresholds = [t1,t2,t3,threeSholdPrice].filter(n=>n>0);
+    const lowestTier = allThresholds.length ? Math.min(...allThresholds) : null;
 
-    if(showProgress && cartTotal < lowestTier){
+    if(showProgress && lowestTier && cartTotal < lowestTier){
       const remain = (lowestTier - cartTotal).toFixed(2);
       progressMsg.innerText = progressText.replace('{{amount}}',remain);
-      progressMsg.style.display='block';
+      progressMsg.style.display = 'block';
     } else {
-      progressMsg.style.display='none';
+      progressMsg.style.display = 'none';
     }
 
-    // -------- NO ACTIVE TIER → remove gift --------
-    if(!activeTier){
+    // ---------- BELOW LOWEST TIER ----------
+    if(!activeVariant){
 
       giftMsg.style.display='none';
 
@@ -134,19 +108,19 @@
       return;
     }
 
-    // -------- SHOW MESSAGE --------
-    giftMsg.style.display='block';
+    // ---------- SHOW UNLOCKED MESSAGE ----------
+    giftMsg.style.display = 'block';
 
-    // -------- WRONG GIFT IN CART → REPLACE --------
-    if(giftItem && giftItem.variant_id != activeTier.variant){
+    // ---------- WRONG GIFT => REPLACE ----------
+    if(giftItem && giftItem.variant_id != activeVariant){
       await removeFreeGift(giftItem.key);
-      await addFreeGift(activeTier.variant);
+      await addFreeGift(activeVariant);
       cartItemUpdate();
       running = false;
       return;
     }
 
-    // -------- FIX QTY --------
+    // ---------- FIX QTY ----------
     if(giftItem && giftItem.quantity != 1){
       await fetch('/cart/change.js',{
         method:'POST',
@@ -161,9 +135,9 @@
       return;
     }
 
-    // -------- ADD NEW GIFT --------
+    // ---------- NO GIFT => ADD ----------
     if(!giftItem){
-      await addFreeGift(activeTier.variant);
+      await addFreeGift(activeVariant);
       cartItemUpdate();
     }
 
