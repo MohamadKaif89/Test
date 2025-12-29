@@ -1,0 +1,212 @@
+<h1> ThreeShold Price: {{settings.free_gift_threshold}}</h1>
+{% comment %} its finding the free gift product slected in theme  {% endcomment %}
+ {% assign freeproduct = all_products[settings.free_gift_product]%}
+<h1>{{freeproduct.selected_or_first_available_variant.id}}</h1> 
+
+{%  assign tiers  = ''%} 
+{% for block  in section.blocks  %}
+  {% assign p  = all_products[block.settings.product] %}
+  {% if p %}
+    {% assign v  = p.selected_or_first_available_variant.id %}
+    {% assign t  = block.settings.threshold |  plus: 0 %}
+    {%  assign tiers  = tiers |  append: '{"threshold":' |  append: t |  append: ', "variant":' |  append: v |  append: '},'  %} 
+    {% endif %}
+
+{% endfor %}
+{%  if tiers != '' %}
+  {%  assign tiers = tiers |  slice: 0, -1   %}  
+ {% endif %}
+{% style %} 
+   #free-gift-message{
+    margin: 10px 0;
+    color: green;
+    display: none;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+  }
+  #free-gift-progress{
+    margin: 10px 0;
+    color: orange;
+    display: none;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+  }
+{% endstyle %}
+
+<script>
+  const enableFreeGift = {{settings.free_gift_enable}};
+  const threeSholdPrice = {{ settings.free_gift_threshold }};
+  const variantId = {{freeproduct.selected_or_first_available_variant.id | default: 0}};
+   
+  const showProgress = {{ settings.free_gift_show_progress | json }};
+  const progressText = {{ settings.free_gift_progress_message | json }};
+  const tierList = [{{tiers |  default: ''}}];
+  let running = false;
+// its removing free gift if gift setting disabled
+  if (!enableFreeGift) {
+    disableRemoveFreeGift()
+  }
+  async function disableRemoveFreeGift() {
+    const items = {{ cart.items | json }};
+// checking free gift is already in cart
+    const remove_gift = items.find(
+      item => item.variant_id == variantId || tierList.some(t=> t.variant == item.variant_id)
+    );
+    // if available remove it and refresh cart ui
+    if (remove_gift) {
+      await removeFreeGift(remove_gift.key);
+      cartItemUpdate();
+    }
+  }
+// get latest cart values
+  async function getCartData() {
+    console.log('Fetching cart.js');
+    const res = await fetch('/cart.js');
+    return res.json();
+  }
+  async function addFreeGift(id) {
+    console.log('Adding free gift variantId:', id);
+    await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id:id,
+        quantity: 1,
+        properties: {_free_gift: 'true'}
+      })
+    });
+    console.log("free gift api finished"); 
+  } 
+  async function removeFreeGift(removeKey) {
+    console.log('Removing free gift',removeKey);
+    await fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: removeKey,
+        quantity: 0
+      })
+    });
+    console.log("free gift remove api finsihed");
+    
+  }
+  async function handleFreeGift() {
+   //  stop if setting of
+    if(!enableFreeGift || !variantId){
+      console.log("Gift Settings off");
+      return; 
+    }
+    // stop if already runnig
+    if (running) {
+      console.log("Skipped alraedy running");
+      
+     return;
+    }
+    running = true;
+    console.log("handlefreegift started");
+    
+    const cart = await getCartData();
+    const cartTotalPr = Number((cart.total_price / 100).toFixed(2));
+
+    console.log('Cart total:', cartTotalPr);
+    console.log('Threshold:', threeSholdPrice);
+    // checking if gift alraedy in cart
+    const giftItem = cart.items.find(
+      item => tierList.some(t=> t.variant == item.variant_id)
+    );
+    console.log('gift item in cart', giftItem);
+    const giftMsg = document.getElementById('free-gift-message');
+    const progressMsg = document.getElementById('free-gift-progress');
+
+    let activeTier =null;
+    tierList.forEach(t=>{
+      if(cartTotalPr >= t.threshold){
+        activeTier = t;
+      }
+    });
+    console.log("Active tier", activeTier);
+    const = lowestTier = tierList.length ? Math.min(...tierList.map(t=>t.threshold)) : threeSholdPrice;
+
+    
+      if (showProgress && cartTotalPr < lowestTier) {
+        const rem = (lowestTier - cartTotalPr).toFixed(2);
+        progressMsg.innerText =
+          progressText.replace('{{amount}}', rem);
+          // console.log("progressText showing:", progressText);  
+        progressMsg.style.display = 'block';
+        console.log("Progress message shown", rem); 
+      } else{
+        progressMsg.style.display = 'none'
+      }
+      if(!activeTier){
+        giftMsg.style.display = 'none';
+      }
+
+      if (giftItem) {
+        console.log("gift exists removing");
+        await removeFreeGift(giftItem.key);
+        cartItemUpdate();
+      }
+  
+    running = false;
+    return;
+    console.log("handlefreegift finished");
+    
+  }
+  giftMsg.style.display = 'block';
+  // wrrong gift replace it
+  if(giftItem && giftItem.variant_id != activeTier.variant){
+    console.log("replacing lower tier gift");
+    await removeFreeGift(giftItem.key);
+    await addFreeGift(activeTier.variant);
+    cartItemUpdate();
+    running = false;
+    return;
+    
+  }
+  // fix qty
+  if(giftItem && giftItem.quantity !== 1){
+    console.log("Resetting gift qty to 1");
+    await fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+        id: giftItem.key,
+        quantity: 1
+      })
+
+    });
+    cartItemUpdate();
+    running = false;
+    return;
+    
+  }
+  if(!giftItem){
+    console.log("Adding new tier gift");
+    await addFreeGift(activeTier.variant);
+    cartItemUpdate();
+  }
+  running = false;
+}
+
+
+  handleFreeGift();
+
+  function cartItemUpdate(){
+    const url = "/?sections=main-cart-items";
+        fetch(url)
+        .then(res => res.json())
+        .then(res => {
+          console.log("cartitem update",res);
+          
+            const result = res['main-cart-items'];
+            const html = new DOMParser().parseFromString(result, 'text/html').querySelector('cart-items')
+            document.querySelector('cart-items').innerHTML = html.innerHTML
+            console.log("Html", html);
+        })
+  }
+  
+
+</script>
