@@ -1,0 +1,179 @@
+{% assign p1 = all_products[settings.free_gift_product_1] %}
+{% assign p2 = all_products[settings.free_gift_product_2] %}
+{% assign p3 = all_products[settings.free_gift_product_3] %}
+
+{% assign v1 = p1.selected_or_first_available_variant.id %}
+{% assign v2 = p2.selected_or_first_available_variant.id %}
+{% assign v3 = p3.selected_or_first_available_variant.id %}
+
+{% style %} 
+#free-gift-message{
+  margin:10px 0;
+  color:green;
+  display:none;
+  text-align:center;
+  font-size:2rem;
+  font-weight:800;
+}
+#free-gift-progress{
+  margin:10px 0;
+  color:orange;
+  display:none;
+  text-align:center;
+  font-size:2rem;
+  font-weight:800;
+}
+{% endstyle %}
+
+<div id="free-gift-message">You've unlocked a free gift 🎁</div>
+<div id="free-gift-progress"></div>
+
+<script>
+if(window.__FREE_GIFT_SCRIPT_LOADED__){
+  console.log('free gift already loaded');
+}else{
+window.__FREE_GIFT_SCRIPT_LOADED__ = true;
+
+  const enableFreeGift = {{ settings.free_gift_enable }};
+  const showProgress = {{ settings.free_gift_show_progress | json }};
+  const progressText = {{ settings.free_gift_progress_message | json }};
+
+  const tierList = [
+    { threshold: {{ settings.free_gift_threshold_1 | default: 0 }}, variant: {{ v1 | default: 0 }}},
+    { threshold: {{ settings.free_gift_threshold_2 | default: 0 }}, variant: {{ v2 | default: 0 }}},
+    { threshold: {{ settings.free_gift_threshold_3 | default: 0 }}, variant: {{ v3 | default: 0 }}}
+  ].filter(t => t.threshold && t.variant);
+
+  let running = false;
+
+  // remove gift when feature off
+  if(!enableFreeGift){
+    disableRemoveFreeGift();
+  }
+
+  async function disableRemoveFreeGift(){
+    const items = {{ cart.items | json }};
+    const gift = items.find(i => tierList.some(t => t.variant == i.variant_id));
+    if(gift){
+      await removeFreeGift(gift.key);
+      cartItemUpdate();
+    }
+  }
+
+  async function getCartData(){
+    const res = await fetch('/cart.js');
+    return res.json();
+  }
+
+  async function addFreeGift(id){
+    await fetch('/cart/add.js',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        id:id,
+        quantity:1,
+        properties:{_free_gift:'true'}
+      })
+    });
+  }
+
+  async function removeFreeGift(key){
+    await fetch('/cart/change.js',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:key,quantity:0})
+    });
+  }
+
+  async function handleFreeGift(){
+
+    if(!enableFreeGift) return;
+    if(running) return;
+
+    running = true;
+
+    const cart = await getCartData();
+    const cartTotal = cart.total_price/100;
+
+    const giftItem = cart.items.find(
+      i => tierList.some(t => t.variant == i.variant_id)
+    );
+
+    const giftMsg = document.getElementById('free-gift-message');
+    const progressMsg = document.getElementById('free-gift-progress');
+
+    let activeTier = null;
+    tierList.forEach(t=>{
+      if(cartTotal >= t.threshold){
+        activeTier = t;
+      }
+    });
+
+    const lowest = tierList.length ? Math.min(...tierList.map(t=>t.threshold)) : null;
+
+    if(showProgress && lowest && cartTotal < lowest){
+      const left = (lowest - cartTotal).toFixed(2);
+      progressMsg.innerText = progressText.replace('{{amount}}', left);
+      progressMsg.style.display = 'block';
+    }else{
+      progressMsg.style.display = 'none';
+    }
+
+    // below all tiers
+    if(!activeTier){
+      giftMsg.style.display = 'none';
+      if(giftItem){
+        await removeFreeGift(giftItem.key);
+        cartItemUpdate();
+      }
+      running = false;
+      return;
+    }
+
+    giftMsg.style.display = 'block';
+
+    // wrong gift -> replace
+    if(giftItem && giftItem.variant_id != activeTier.variant){
+      await removeFreeGift(giftItem.key);
+      await addFreeGift(activeTier.variant);
+      cartItemUpdate();
+      running = false;
+      return;
+    }
+
+    // fix qty
+    if(giftItem && giftItem.quantity != 1){
+      await fetch('/cart/change.js',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({id:giftItem.key,quantity:1})
+      });
+      cartItemUpdate();
+      running = false;
+      return;
+    }
+
+    // add if missing
+    if(!giftItem){
+      await addFreeGift(activeTier.variant);
+      cartItemUpdate();
+    }
+
+    running = false;
+  }
+
+  handleFreeGift();
+
+  function cartItemUpdate(){
+    fetch("/?sections=main-cart-items")
+    .then(r=>r.json())
+    .then(r=>{
+      const html = new DOMParser()
+        .parseFromString(r['main-cart-items'],'text/html')
+        .querySelector('cart-items');
+      document.querySelector('cart-items').innerHTML = html.innerHTML;
+    });
+  }
+
+} // wrapper end
+</script>
