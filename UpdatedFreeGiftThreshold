@@ -1,0 +1,190 @@
+<h1> ThreeShold Price: {{settings.free_gift_threshold}}</h1>
+{% comment %} its finding the free gift product slected in theme  {% endcomment %}
+ {% assign freeproduct = all_products[settings.free_gift_product]%}
+<h1>{{freeproduct.selected_or_first_available_variant.id}}</h1> 
+{%  assign p1  = all_products[settings.free_gift_product_1]  %}
+{%  assign p2  = all_products[settings.free_gift_product_2]  %}
+{%  assign p3  = all_products[settings.free_gift_product_3]  %}
+
+{% assign v1  = p1.selected_or_first_available_variant.id  %}
+{% assign v2  = p2.selected_or_first_available_variant.id  %}
+{% assign v3  = p3.selected_or_first_available_variant.id  %}
+
+{% style %} 
+   #free-gift-message{
+    margin: 10px 0;
+    color: green;
+    display: none;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+  }
+  #free-gift-progress{
+    margin: 10px 0;
+    color: orange;
+    display: none;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+  }
+{% endstyle %}
+
+
+<script>
+  const enableFreeGift = {{settings.free_gift_enable}};
+  const showProgress = {{ settings.free_gift_show_progress | json }};
+  const progressText = {{ settings.free_gift_progress_message | json }};
+  let running = false;
+
+  const threeSholdPrice = {{ settings.free_gift_threshold | default: 0 }};
+  const variantId = {{freeproduct.selected_or_first_available_variant.id | default: 0}};
+
+  const v1 = {{ v1 | default: 0 }};
+  const v2 = {{ v2 | default: 0 }};
+  const v3 = {{ v3 | default: 0 }};
+
+  const t1 = {{ settings.free_gift_threshold_1 | default: 0 }};
+  const t2 = {{ settings.free_gift_threshold_2 | default: 0 }};
+  const t3 = {{ settings.free_gift_threshold_3 | default: 0 }};
+  
+  if(!enableFreeGift){
+    disableRemoveFreeGift();
+  }
+  async function disableRemoveFreeGift(){
+    const items = {{cart.items |  json}};
+    const remove_gift = items.find(
+      item => [variantId, v1, v2,v3].includes(item.variant_id)
+    );
+    if(remove_gift){
+      await removeFreeGift(remove_gift.key);
+      cartItemUpdate();
+    }
+  }
+
+  async function getCartData() {
+    const res = await fetch('/cart.js');
+    return res.json();
+  }
+
+  async function addFreeGift(id) {
+    await fetch('/cart/add.js',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        id:id,
+        quantity:1,
+        properties:{_free_gift:'true'}
+      })
+    });
+  }
+
+  async function removeFreeGift(key) {
+    await fetch('/cart/change.js',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        id:key,
+        quantity:0
+      })
+    });
+  }
+
+  async function handleFreeGift(){
+    if(!enableFreeGift){
+      return;
+    }
+    if(running){
+      return;
+    }
+
+    running = true;
+
+    const cart = await getCartData();
+    const cartTotal = cart.total_price/100;
+
+    // find gift currently in cart
+    const giftItem = cart.items.find(
+      i => [variantId,v1,v2,v3].includes(i.variant_id)
+    );
+
+    const giftMsg = document.getElementById('free-gift-message');
+    const progressMsg = document.getElementById('free-gift-progress');
+    let activeVariant = null;
+
+    if(cartTotal >= t3 && v3){
+      activeVariant = v3;
+    }else if(cartTotal >= t2 && v2){
+      activeVariant = v2;
+    }else if(cartTotal >= t1 && v1){
+      activeVariant = v1;
+    }else if(cartTotal >= threeSholdPrice && variantId){
+      activeVariant = variantId;
+    }
+
+    const allThresholds = [t1,t2,t3,threeSholdPrice].filter(n=>n>0);
+    const lowestTier = allThresholds.length ? Math.min(...allThresholds) : null;
+
+    if(showProgress && lowestTier && cartTotal < lowestTier){
+      const remain = (lowestTier - cartTotal).toFixed(2);
+      progressMsg.innerText = progressText.replace('{{amount}}',remain);
+      progressMsg.style.display = 'block';
+    } else {
+      progressMsg.style.display = 'none';
+    }
+    if(!activeVariant){
+
+      giftMsg.style.display='none';
+
+      if(giftItem){
+        await removeFreeGift(giftItem.key);
+        cartItemUpdate();
+      }
+
+      running = false;
+      return;
+    }
+
+    giftMsg.style.display = 'block';
+
+    if(giftItem && giftItem.variant_id != activeVariant){
+      await removeFreeGift(giftItem.key);
+      await addFreeGift(activeVariant);
+      cartItemUpdate();
+      running = false;
+      return;
+    }
+    if(giftItem && giftItem.quantity != 1){
+      await fetch('/cart/change.js',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          id: giftItem.key,
+          quantity: 1
+        })
+      });
+      cartItemUpdate();
+      running = false;
+      return;
+    }
+    if(!giftItem){
+      await addFreeGift(activeVariant);
+      cartItemUpdate();
+    }
+
+    running = false;
+  }
+
+  handleFreeGift();
+
+
+  function cartItemUpdate(){
+    fetch("/?sections=main-cart-items")
+    .then(r=>r.json())
+    .then(r=>{
+      const html = new DOMParser()
+      .parseFromString(r['main-cart-items'],'text/html')
+      .querySelector('cart-items');
+      document.querySelector('cart-items').innerHTML = html.innerHTML;
+    });
+  }
+</script>
