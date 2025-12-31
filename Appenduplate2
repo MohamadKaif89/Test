@@ -1,0 +1,172 @@
+document.addEventListener("DOMContentLoaded", () => {
+
+  // -------------------
+  // INIT MAIN SWIPERS
+  // -------------------
+  const thumbSwiper = new Swiper(".thumbSwiper", {
+    slidesPerView: 4,
+    spaceBetween: 10,
+    watchSlidesProgress: true
+  });
+
+  const mainSwiper = new Swiper(".mainSwiper", {
+    spaceBetween: 10,
+    thumbs: { swiper: thumbSwiper },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev"
+    }
+  });
+
+
+
+  // -------------------
+  // DOM ELEMENTS
+  // -------------------
+  const titleEl = document.getElementById("pdpTitle");
+  const priceEl = document.getElementById("pdpPrice");
+  const variantSelect = document.getElementById("variantSelect");
+  const addBtn = document.getElementById("addToCartBtn");
+
+  const mainSlides = document.getElementById("mainSlides");
+  const thumbSlides = document.getElementById("thumbSlides");
+
+
+
+  // -------------------
+  // ADD TO CART HANDLER
+  // -------------------
+  function attachAddToCart() {
+    addBtn.onclick = async () => {
+
+      await fetch("/cart/add.js", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          id: variantSelect.value,
+          quantity: 1
+        })
+      });
+
+      alert("Added to cart");
+    };
+  }
+
+  attachAddToCart();
+
+
+
+  // -------------------
+  // RELATED PRODUCT CLICK
+  // -------------------
+  document.querySelectorAll(".related-btn").forEach(btn => {
+
+    btn.addEventListener("click", async () => {
+
+      const handle = btn.dataset.handle;
+
+      const res = await fetch(`/products/${handle}.js`);
+      const product = await res.json();
+
+
+
+      // UPDATE TITLE + PRICE
+      titleEl.textContent = product.title;
+      priceEl.textContent = "₹" + product.price / 100;
+
+
+
+      // UPDATE VARIANT DROPDOWN
+      variantSelect.innerHTML = product.variants.map(v => `
+        <option value="${v.id}">
+          ${v.title}
+        </option>
+      `).join("");
+
+
+      // -------------------
+      // UPDATE GALLERY
+      // -------------------
+      mainSlides.innerHTML = "";
+      thumbSlides.innerHTML = "";
+
+      product.images.forEach(img => {
+
+        mainSlides.innerHTML += `
+          <div class="swiper-slide">
+            <img src="${img}">
+          </div>
+        `;
+
+        thumbSlides.innerHTML += `
+          <div class="swiper-slide">
+            <img src="${img}">
+          </div>
+        `;
+      });
+
+      // RELOAD SWIPERS
+      mainSwiper.update();
+      thumbSwiper.update();
+
+
+
+      // -------------------
+      // VARIANT → IMAGE SYNC
+      // -------------------
+      variantSelect.onchange = () => {
+
+        const selected = product.variants.find(v => v.id == variantSelect.value);
+
+        if (selected && selected.featured_image) {
+          const index = product.images.indexOf(selected.featured_image.src);
+          if (index >= 0) mainSwiper.slideTo(index);
+        }
+      };
+
+
+
+      attachAddToCart();
+
+    });
+
+
+  });
+
+});
+
+
+
+
+.pdp-wrapper{
+  display:flex;
+  gap:30px;
+  flex-wrap:wrap;
+}
+
+.pdp-left,.pdp-right{
+  flex:1;
+  min-width:300px;
+}
+
+.related-wrapper{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.related-btn{
+  border:1px solid #ddd;
+  padding:6px;
+  border-radius:6px;
+  background:#fff;
+  cursor:pointer;
+}
+
+.related-btn img{
+  width:80px;
+  height:80px;
+  object-fit:cover;
+  border-radius:6px;
+}
+
