@@ -1,3 +1,70 @@
+<div class="pdp-wrapper">
+
+  <div class="pdp-left">
+
+    <div class="swiper mainSwiper">
+      <div class="swiper-wrapper" id="mainSlides">
+        {% for media in product.media %}
+          <div class="swiper-slide">
+            <img src="{{ media | img_url: '800x' }}">
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </div>
+
+
+    <div class="swiper thumbSwiper">
+      <div class="swiper-wrapper" id="thumbSlides">
+        {% for media in product.media %}
+          <div class="swiper-slide">
+            <img src="{{ media | img_url: '200x' }}">
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+
+
+  <div class="pdp-right">
+
+    <h1 id="pdpTitle">{{ product.title }}</h1>
+
+    <p id="pdpPrice">{{ product.price | money }}</p>
+
+    <label>Select Variant</label>
+    <select id="variantSelect">
+      {% for v in product.variants %}
+        <option value="{{ v.id }}">{{ v.title }}</option>
+      {% endfor %}
+    </select>
+
+    <button id="addToCartBtn">Add To Cart</button>
+
+
+    <h3>Other Colors</h3>
+
+    <div class="related-wrapper">
+      {% for p in product.metafields.custom.related_products.value %}
+        <button class="related-btn" data-handle="{{ p.handle }}">
+          <img src="{{ p.featured_image | img_url: '300x' }}">
+          <span>{{ p.title }}</span>
+        </button>
+      {% endfor %}
+    </div>
+
+  </div>
+
+</div>
+
+
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
 
   // -------------------
