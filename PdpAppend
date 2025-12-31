@@ -1,0 +1,272 @@
+<div class="pdp-layout">
+
+  <!-- LEFT SIDE MAIN PRODUCT IMAGES -->
+  <div class="pdp-left">
+    <div class="swiper mainSwiper">
+      <div class="swiper-wrapper">
+        {% for media in product.media %}
+          <div class="swiper-slide">
+            <img src="{{ media | img_url: '800x' }}">
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="swiper thumbSwiper">
+      <div class="swiper-wrapper">
+        {% for media in product.media %}
+          <div class="swiper-slide">
+            <img src="{{ media | img_url: '200x' }}">
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+
+  <!-- RIGHT SIDE -->
+  <div class="pdp-right">
+
+    <h1>{{ product.title }}</h1>
+
+    <p class="price">{{ product.price | money }}</p>
+
+    <label>Choose Variant</label>
+    <select id="main-variant">
+      {% for v in product.variants %}
+        <option value="{{ v.id }}">{{ v.title }}</option>
+      {% endfor %}
+    </select>
+
+    <button id="main-add">Add To Cart</button>
+
+    <!-- RELATED PRODUCTS (FROM METAFIELD) -->
+    <h3>Other Colors</h3>
+
+    <div class="related-list">
+      {% for p in product.metafields.custom.related_products.value %}
+        <button class="related-btn" data-handle="{{ p.handle }}">
+          <img src="{{ p.featured_image | img_url: '200x' }}">
+          <span>{{ p.title }}</span>
+        </button>
+      {% endfor %}
+    </div>
+
+    <!-- PREVIEW PRODUCT WILL BE APPENDED HERE -->
+    <div id="preview-area"></div>
+
+  </div>
+
+</div>
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  // -----------------------------
+  // MAIN PRODUCT SWIPER INIT
+  // -----------------------------
+  const mainThumbs = new Swiper(".thumbSwiper", {
+    slidesPerView: 4,
+    spaceBetween: 10,
+    watchSlidesProgress: true
+  });
+
+  const mainGallery = new Swiper(".mainSwiper", {
+    spaceBetween: 10,
+    thumbs: { swiper: mainThumbs }
+  });
+
+
+  // -----------------------------
+  // MAIN PRODUCT ADD TO CART
+  // -----------------------------
+  const mainAddBtn = document.getElementById("main-add");
+  const mainVariant = document.getElementById("main-variant");
+
+  if (mainAddBtn) {
+    mainAddBtn.addEventListener("click", async () => {
+      await fetch("/cart/add.js", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          id: mainVariant.value,
+          quantity: 1
+        })
+      });
+
+      alert("Added to cart");
+    });
+  }
+
+
+
+  // -----------------------------
+  // RELATED PRODUCT PREVIEW
+  // -----------------------------
+  const previewArea = document.getElementById("preview-area");
+  const relatedBtns = document.querySelectorAll(".related-btn");
+
+  relatedBtns.forEach(btn => {
+    btn.addEventListener("click", async () => {
+
+      const handle = btn.dataset.handle;
+
+      // fetch JSON
+      const res = await fetch(`/products/${handle}.js`);
+      const p = await res.json();
+
+
+      // build HTML block (append, not replace)
+      previewArea.innerHTML += `
+        <div class="preview-box">
+
+          <h2>${p.title}</h2>
+          <p>₹${p.price / 100}</p>
+
+          <p>${p.available ? "In stock" : "Out of stock"}</p>
+
+          <select class="pv-variant">
+            ${p.variants.map(v => `
+              <option value="${v.id}">
+                ${v.title}
+              </option>
+            `).join("")}
+          </select>
+
+          <button class="pv-add">Add To Cart</button>
+
+          <div class="swiper pvMain">
+            <div class="swiper-wrapper">
+              ${p.images.map(img => `
+                <div class="swiper-slide">
+                  <img src="${img}">
+                </div>
+              `).join("")}
+            </div>
+          </div>
+
+          <div class="swiper pvThumb">
+            <div class="swiper-wrapper">
+              ${p.images.map(img => `
+                <div class="swiper-slide">
+                  <img src="${img}">
+                </div>
+              `).join("")}
+            </div>
+          </div>
+
+        </div>
+      `;
+
+
+      // get last preview block
+      const previewBox = previewArea.lastElementChild;
+
+
+      // INIT SWIPER FOR THIS BLOCK ONLY
+      const thumbs = new Swiper(previewBox.querySelector(".pvThumb"), {
+        slidesPerView: 4,
+        spaceBetween: 10,
+        watchSlidesProgress: true
+      });
+
+      const gallery = new Swiper(previewBox.querySelector(".pvMain"), {
+        spaceBetween: 10,
+        thumbs: { swiper: thumbs }
+      });
+
+
+
+      // VARIANT IMAGE SYNC
+      const pvSelect = previewBox.querySelector(".pv-variant");
+      const addBtn = previewBox.querySelector(".pv-add");
+
+      addBtn.dataset.id = pvSelect.value;
+
+      pvSelect.addEventListener("change", () => {
+
+        const v = p.variants.find(v => v.id == pvSelect.value);
+        addBtn.dataset.id = v.id;
+
+        if (v.featured_image) {
+          const index = p.images.indexOf(v.featured_image.src);
+          if (index >= 0) gallery.slideTo(index);
+        }
+      });
+
+
+
+      // ADD TO CART AJAX
+      addBtn.addEventListener("click", async () => {
+
+        await fetch("/cart/add.js", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({
+            id: addBtn.dataset.id,
+            quantity: 1
+          })
+        });
+
+        alert("Added to cart");
+      });
+
+    });
+  });
+
+});
+
+
+.pdp-layout{
+  display:flex;
+  gap:25px;
+  flex-wrap:wrap;
+}
+
+.pdp-left{
+  flex:1;
+  min-width:300px;
+}
+
+.pdp-right{
+  flex:1;
+  min-width:300px;
+}
+
+.related-list{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.related-btn{
+  border:1px solid #ddd;
+  background:#fff;
+  padding:8px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.related-btn img{
+  width:70px;
+  height:70px;
+  border-radius:6px;
+  object-fit:cover;
+}
+
+.preview-box{
+  border:1px solid #eee;
+  padding:15px;
+  border-radius:10px;
+  margin-top:15px;
+  background:#fafafa;
+}
+
+.swiper{
+  margin-top:10px;
+}
+
+.swiper img{
+  width:100%;
+  border-radius:10px;
+}
