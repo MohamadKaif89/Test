@@ -1,0 +1,300 @@
+<div class="pdp-wrapper">
+
+  <div class="pdp-left">
+
+    <!-- MAIN PRODUCT GALLERY -->
+    <div class="swiper mainSwiper">
+      <div class="swiper-wrapper">
+        {% for media in product.media %}
+          <div class="swiper-slide">
+            <img src="{{ media | img_url: '800x' }}">
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- ARROWS -->
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </div>
+
+    <!-- THUMBNAILS -->
+    <div class="swiper thumbSwiper">
+      <div class="swiper-wrapper">
+        {% for media in product.media %}
+          <div class="swiper-slide">
+            <img src="{{ media | img_url: '200x' }}">
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="pdp-right">
+
+    <h1>{{ product.title }}</h1>
+
+    <p class="pdp-price">{{ product.price | money }}</p>
+
+    <label>Select Variant</label>
+    <select id="mainVariant">
+      {% for v in product.variants %}
+        <option value="{{ v.id }}">{{ v.title }}</option>
+      {% endfor %}
+    </select>
+
+    <button id="mainAddBtn">Add To Cart</button>
+
+
+    <h3>Other Colors</h3>
+
+    <div class="related-wrapper">
+      {% for p in product.metafields.custom.related_products.value %}
+        <button class="related-btn" data-handle="{{ p.handle }}">
+          <img src="{{ p.featured_image | img_url: '300x' }}">
+          <span>{{ p.title }}</span>
+        </button>
+      {% endfor %}
+    </div>
+
+    <!-- PREVIEW PRODUCTS WILL BE APPENDED HERE -->
+    <div id="previewArea"></div>
+
+  </div>
+
+</div>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  // MAIN PRODUCT SWIPER
+  const mainThumbs = new Swiper(".thumbSwiper", {
+    slidesPerView: 4,
+    spaceBetween: 10,
+    watchSlidesProgress: true
+  });
+
+  const mainGallery = new Swiper(".mainSwiper", {
+    spaceBetween: 10,
+    thumbs: { swiper: mainThumbs },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev"
+    }
+  });
+
+
+  // MAIN ADD TO CART
+  const mainAdd = document.getElementById("mainAddBtn");
+  const mainVariant = document.getElementById("mainVariant");
+
+  if (mainAdd && mainVariant) {
+    mainAdd.addEventListener("click", async () => {
+
+      await fetch("/cart/add.js", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          id: mainVariant.value,
+          quantity: 1
+        })
+      });
+
+      alert("Added to cart");
+    });
+  }
+
+
+
+  // RELATED PRODUCT PREVIEW (AJAX APPEND)
+  const previewArea = document.getElementById("previewArea");
+  const relatedBtns = document.querySelectorAll(".related-btn");
+
+  relatedBtns.forEach(btn => {
+
+    btn.addEventListener("click", async () => {
+
+      const handle = btn.dataset.handle;
+
+      const res = await fetch(`/products/${handle}.js`);
+      const p = await res.json();
+
+
+      // BUILD PREVIEW BLOCK
+      const box = document.createElement("div");
+      box.className = "preview-box";
+
+      box.innerHTML = `
+        <div class="preview-left">
+
+          <div class="swiper pvMain">
+            <div class="swiper-wrapper">
+              ${p.images.map(i => `
+                <div class="swiper-slide">
+                  <img src="${i}">
+                </div>
+              `).join("")}
+            </div>
+
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+          </div>
+
+          <div class="swiper pvThumb">
+            <div class="swiper-wrapper">
+              ${p.images.map(i => `
+                <div class="swiper-slide">
+                  <img src="${i}">
+                </div>
+              `).join("")}
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="preview-right">
+
+          <h3>${p.title}</h3>
+
+          <p>₹${p.price / 100}</p>
+
+          <p>${p.available ? "In stock" : "Out of stock"}</p>
+
+          <label>Select Variant</label>
+          <select class="pvVariant">
+            ${p.variants.map(v => `
+              <option value="${v.id}">
+                ${v.title}
+              </option>
+            `).join("")}
+          </select>
+
+          <button class="pvAddBtn">
+            Add To Cart
+          </button>
+
+        </div>
+      `;
+
+      previewArea.appendChild(box);
+
+
+
+      // INIT SWIPERS FOR THIS BLOCK
+      const pvThumb = new Swiper(box.querySelector(".pvThumb"), {
+        slidesPerView: 4,
+        spaceBetween: 10,
+        watchSlidesProgress: true
+      });
+
+      const pvMain = new Swiper(box.querySelector(".pvMain"), {
+        spaceBetween: 10,
+        thumbs: { swiper: pvThumb },
+        navigation: {
+          nextEl: box.querySelector(".swiper-button-next"),
+          prevEl: box.querySelector(".swiper-button-prev")
+        }
+      });
+
+
+
+      // VARIANT IMAGE SYNC
+      const pvSelect = box.querySelector(".pvVariant");
+      const pvAdd = box.querySelector(".pvAddBtn");
+
+      pvAdd.dataset.id = pvSelect.value;
+
+      pvSelect.addEventListener("change", () => {
+
+        const selected = p.variants.find(v => v.id == pvSelect.value);
+
+        pvAdd.dataset.id = selected.id;
+
+        if (selected.featured_image) {
+          const index = p.images.indexOf(selected.featured_image.src);
+          if (index >= 0) pvMain.slideTo(index);
+        }
+
+      });
+
+
+
+      // ADD PREVIEW PRODUCT TO CART
+      pvAdd.addEventListener("click", async () => {
+
+        await fetch("/cart/add.js", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({
+            id: pvAdd.dataset.id,
+            quantity: 1
+          })
+        });
+
+        alert("Added to cart");
+      });
+
+    });
+
+  });
+
+});
+
+
+.pdp-wrapper{
+  display:flex;
+  gap:30px;
+  flex-wrap:wrap;
+}
+
+.pdp-left,
+.preview-left{
+  flex:1;
+  min-width:280px;
+}
+
+.pdp-right,
+.preview-right{
+  flex:1;
+  min-width:280px;
+}
+
+.related-wrapper{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.related-btn{
+  border:1px solid #ddd;
+  background:#fff;
+  border-radius:8px;
+  padding:6px;
+  cursor:pointer;
+}
+
+.related-btn img{
+  width:80px;
+  height:80px;
+  object-fit:cover;
+  border-radius:6px;
+}
+
+.preview-box{
+  border:1px solid #eee;
+  padding:15px;
+  border-radius:12px;
+  margin-top:20px;
+  background:#fafafa;
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+}
+
+.swiper img{
+  width:100%;
+  border-radius:10px;
+}
+
