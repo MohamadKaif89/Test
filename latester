@@ -77,7 +77,7 @@
         flex-wrap: wrap;
         align-items: flex-start;
     }
-       .pdp-left,
+    .pdp-left,
     .pdp-right {
         flex: 1;
         min-width: 300px;
@@ -218,7 +218,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", () =>{
         const thumbs = new Swiper(".thumb-swiper", {
-            slidesPerView: 4;
+            slidesPerView: 4,
             spaceBetween: 10,
             watchSlidesProgress: true
         });
@@ -237,7 +237,7 @@
     const appendNew = document.getElementById("append-new");
 
     async function addToCart(variantId){
-        await fetch("/card/add.js",{
+        await fetch("/cart/add.js",{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body: JSON.stringify({
@@ -252,6 +252,94 @@
     addBtn.onclick = async () =>{
         await addToCart(variantSelect.value);
     }
+    function money(amount){
+        return "$"+(amount/100);
+    }
+    // loading product and append preview
+    async function loadProduct(handle){
+        const res = await fetch(`/products/${handle}.js`);
+        const p = await res.json();
+        const box = document.createElement("div");
+        box.className = "append-box";
+        box.innerHTML = `
+        <div class="preview-left">
+        <div class="swiper pv-main">
+        <div class="swiper-wrapper">
+        ${p.images.map(img =>`
+        <div class="swiper-slide">
+        <img src="${img}">
+        </div>
+        `).join("")}
+        </div>
+
+         <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        </div> 
+
+        <div class="swiper pv-thumb">
+        <div class="swiper-wrapper">
+        ${p.images.map(img =>`
+        <div class="swiper-slide">
+        <img src="${img}">
+        </div>
+        `).join("")}
+        </div>
+        </div>
+
+        </div>
+        
+        <div class="preview-right">
+        <h2>${p.title}</h2>
+        <p>${money(p.price)}</p>
+        <p>${p.available ? "In Stock": "Out of Stock"}</p>
+        <label>Select Variant</label>
+        <select class="pv-variant">
+        ${p.variants.map(v =>`
+        <option value="${v.id}">${v.title}</option>
+        
+        `).join("")}
+        </select>
+        <button class="pv-add">
+        Add To Cart
+        </button>
+        </div>
+
+        `;
+        appendNew.appendChild(box);
+
+        const pvThumb = new Swiper(box.querySelector(".pv-thumb"),{
+            slidesPerView: 4,
+            spaceBetween: 10,
+            watchSlidesProgress: true
+        });
+        const pvMain = new Swiper(box.querySelector(".pv-main"),{
+            spaceBetween: 10,
+            thumbs:{swiper: pvThumb},
+            navigation:{
+                nextEl: box.querySelector(".swiper-button-next"),
+                prevEl: box.querySelector(".swiper-button-prev")
+            }
+        });
+
+        const pvSelect = box.querySelector(".pv-variant");
+        pvSelect.onchange =() =>{
+            const match = p.variants.find(v.id == pvSelect.value);
+            if(match && match.featured_image){
+                const index = p.images.indexOf(match.featured_image.src);
+
+                if(index >= 0){
+                    pvMain.slideTo(index);
+                }
+            }
+        }
+        box.querySelector(".pv-add").onclick = async ()=>{
+            await addToCart(pvSelect.value);
+
+        };
+    }
+    document.querySelectorAll(".related-btn").forEach(btn => {
+        btn.onclick= () => loadProduct(btn.dataset.handle);
+    });
 
     })
 </script>
